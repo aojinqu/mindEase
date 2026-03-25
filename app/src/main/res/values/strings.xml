@@ -1,3 +1,8 @@
-<resources>
+﻿<resources>
     <string name="app_name">MindEase</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_analysis">Analysis</string>
+    <string name="nav_calendar">Calendar</string>
+    <string name="nav_community">Community</string>
+    <string name="nav_profile">Profile</string>
 </resources>

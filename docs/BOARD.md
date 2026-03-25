@@ -1,323 +1,146 @@
-# MindEase 开发看板（BOARD）
+﻿# MindEase 开发看板（BOARD）
+
+## 1. 当前状态
+
+- 项目阶段：`v0.2-skeleton`（骨架已落地）
+- 开发状态：`进行中`
+- 更新时间：`2026-03-25`
+
+## 2. 本次完成（根据 PRD + 技术设计）
+
+### 2.1 工程与架构骨架
+
+- 已将命名空间统一为 `com.mindease`
+- 已补齐依赖骨架：`Fragment`、`Lifecycle`、`RecyclerView`、`Room`
+- 已建立分层目录结构：
+  - `app`
+  - `common`
+  - `data`
+  - `domain`
+  - `feature`
+
+### 2.2 应用入口与导航骨架
+
+- 已新增 `MindEaseApp`
+- 已配置 `SplashActivity` 为启动页
+- 已新增页面骨架：
+  - `SplashActivity`
+  - `OnboardingActivity`
+  - `AuthActivity`
+  - `MainActivity`
+  - `SettingsActivity`
+- 已在 `MainActivity` 搭建 Bottom Navigation + 5 个主页面 Fragment：
+  - `HomeFragment`
+  - `AnalysisFragment`
+  - `CalendarFragment`
+  - `CommunityFragment`
+  - `ProfileFragment`
+
+### 2.3 数据层骨架（Room）
+
+- 已新增 Entity：
+  - `MoodRecordEntity`
+  - `MoodTagEntity`
+  - `MoodRecordTagCrossRef`
+  - `SuggestionEntity`
+  - `AnalysisSnapshotEntity`
+- 已新增 DAO：
+  - `MoodRecordDao`
+  - `MoodTagDao`
+  - `SuggestionDao`
+  - `AnalysisSnapshotDao`
+- 已新增数据库入口：`MindEaseDatabase`
+
+### 2.4 领域层与仓储骨架
+
+- 已新增 Domain Model：`MoodRecord`、`Suggestion`
+- 已新增 Repository 接口：
+  - `AuthRepository`
+  - `UserRepository`
+  - `MoodRepository`
+  - `AnalysisRepository`
+  - `SuggestionRepository`
+  - `CommunityRepository`
+- 已新增 Repository 实现占位类（后续补真实数据流）
+- 已新增 UseCase 骨架：
+  - `CreateMoodRecordUseCase`
+  - `GetRecentMoodRecordsUseCase`
+  - `GenerateMoodAnalysisUseCase`
+  - `GenerateSuggestionUseCase`
+- 已新增 Service 骨架：
+  - `RuleBasedSentimentAnalyzer`
+  - `SuggestionEngine`
+
+### 2.5 资源与UI骨架
+
+- 已新增布局：
+  - `activity_splash.xml`
+  - `activity_onboarding.xml`
+  - `activity_auth.xml`
+  - `activity_main.xml`
+  - `activity_settings.xml`
+  - `fragment_home.xml`
+  - `fragment_analysis.xml`
+  - `fragment_calendar.xml`
+  - `fragment_community.xml`
+  - `fragment_profile.xml`
+- 已新增底部导航菜单：`res/menu/bottom_nav_menu.xml`
+- 已补充基础文案：`res/values/strings.xml`
+
+## 3. 看板状态更新
+
+### 3.1 P0（核心骨架）
+
+- 创建 Android 项目骨架：`已完成`
+- 搭建基础 package 结构：`已完成`
+- MainActivity + Bottom Navigation：`已完成`
+- Room 基础结构：`已完成`
+- 情绪记录主流程：`未开始`
+
+### 3.2 P1（MVP核心能力）
+
+- 登录注册：`未开始`
+- 分析页图表：`未开始`
+- 建议页与首页摘要：`未开始`
+- 日历页：`未开始`
 
-## 1. 文档用途
+### 3.3 P2（增强能力）
 
-本文件用于持续记录 MindEase 项目的开发进度、当前上下文、关键决策、风险状态与下一步计划。
+- 匿名社区发帖与浏览：`未开始`
+- Firebase 接入：`未开始`
+- UI细化与空状态：`未开始`
 
-使用方式：
+## 4. MVP覆盖检查（更新后）
 
-- 每完成一个阶段，更新对应模块状态
-- 每次有技术决策变化时，补充到“上下文状态”与“决策记录”
-- 每次开始新任务前，先看“当前优先级”和“阻塞项”
-- 每次演示前，优先检查“MVP 覆盖情况”
+- 注册与登录：`未完成`
+- 创建/编辑/删除情绪记录：`未完成`
+- 标签与文本输入：`未完成`
+- 基础情绪分析：`未完成`
+- 周/月趋势图：`未完成`
+- 情绪日历：`未完成`
+- 个性化建议：`未完成`
+- 匿名发帖与浏览：`未完成`
+- 模拟器可运行：`待本轮编译验证`
 
----
+## 5. 风险与备注
 
-## 2. 项目基础信息
+- 当前为“可编译骨架优先”，业务逻辑仍为占位实现
+- Firebase、图表和AI能力未接入
+- 需要下一阶段尽快打通 `MoodRecord` 的真实本地增删改查链路
 
-| 项目项 | 内容 |
-|---|---|
-| 项目名称 | MindEase |
-| 项目类型 | Android 情绪日记与情绪支持 App |
-| 目标用户 | 大学生 |
-| 开发平台 | Android Studio |
-| 开发语言 | Java |
-| UI 技术 | XML + Material Design |
-| 本地存储 | Room / SQLite |
-| 云端方案 | Firebase Auth + Firestore（建议） |
-| 当前阶段 | 设计阶段 |
-| 当前版本 | v0.1-planning |
-
----
-
-## 3. 当前上下文状态
-
-### 3.1 产品定位
-
-- MindEase 是一款面向大学生的 AI 辅助情绪日记与心理支持 App
-- 产品强调“记录 - 分析 - 建议 - 社区”主流程
-- 产品属于轻量情绪支持工具，不提供医疗诊断
-
-### 3.2 当前范围定义
-
-当前以 MVP 为主，优先完成：
-
-- 注册与登录
-- 情绪记录
-- 标签与文字日记
-- 基础规则情绪分析
-- 周/月趋势图
-- 情绪日历
-- 个性化建议
-- 匿名社区发帖与浏览
-
-暂不优先实现：
-
-- 评论回复
-- AI 安慰重写
-- 树洞共鸣匹配
-- 情绪骤降提醒
-- 给未来的自己写信
-
-### 3.3 当前技术方向
-
-- 架构模式：MVVM + Repository + UseCase
-- 客户端：Android Studio + Java
-- 界面：XML + Fragment + Bottom Navigation
-- 数据：本地 Room 为主，远端 Firebase 为辅
-- AI 策略：先规则分析，后扩展 AI API
-
-### 3.4 当前已有文档
-
-- [PRD.md](/e:/hku/smartphone/bigHW/PRD.md)
-- [TECHNICAL_DESIGN.md](/e:/hku/smartphone/bigHW/TECHNICAL_DESIGN.md)
-- [TASK.md](/e:/hku/smartphone/bigHW/TASK.md)
-- [BOARD.md](/e:/hku/smartphone/bigHW/BOARD.md)
-
----
-
-## 4. 开发阶段总览
-
-| 阶段 | 状态 | 说明 |
-|---|---|---|
-| 需求分析 | 已完成 | 已整理 PRD |
-| 技术设计 | 已完成 | 已输出技术设计文档 |
-| UI/交互设计 | 未开始 | 待确定页面草图或组件方案 |
-| 项目初始化 | 未开始 | 待创建 Android Studio 工程 |
-| 账户模块开发 | 未开始 | 登录注册与用户资料 |
-| 情绪记录模块开发 | 未开始 | 核心记录能力 |
-| 分析模块开发 | 未开始 | 趋势图与规则分析 |
-| 日历模块开发 | 未开始 | 情绪日历视图 |
-| 建议模块开发 | 未开始 | 规则建议生成 |
-| 社区模块开发 | 未开始 | 匿名发帖与浏览 |
-| 联调测试 | 未开始 | 模块联通验证 |
-| Demo 准备 | 未开始 | 演示流程与素材 |
-
----
-
-## 5. 模块进度看板
-
-### 5.1 启动与导航
-
-| 任务 | 状态 | 备注 |
-|---|---|---|
-| Splash 页面 | 未开始 | |
-| Onboarding 页面 | 未开始 | |
-| MainActivity + Bottom Navigation | 未开始 | |
-| Fragment 导航结构 | 未开始 | |
-
-### 5.2 用户账户模块
-
-| 任务 | 状态 | 备注 |
-|---|---|---|
-| 登录页 | 未开始 | |
-| 注册页 | 未开始 | |
-| Firebase Auth 接入 | 未开始 | |
-| 登录状态持久化 | 未开始 | |
-| 用户资料页 | 未开始 | |
-
-### 5.3 情绪记录模块
-
-| 任务 | 状态 | 备注 |
-|---|---|---|
-| 情绪选择 UI | 未开始 | |
-| 强度滑块 | 未开始 | |
-| 标签选择 | 未开始 | |
-| 文本输入 | 未开始 | |
-| 新增记录 | 未开始 | |
-| 编辑记录 | 未开始 | |
-| 删除记录 | 未开始 | |
-| Room 数据落库 | 未开始 | |
-
-### 5.4 情绪分析模块
-
-| 任务 | 状态 | 备注 |
-|---|---|---|
-| 规则情绪分析器 | 未开始 | |
-| 近 7 天统计 | 未开始 | |
-| 近 30 天统计 | 未开始 | |
-| 趋势图接入 | 未开始 | MPAndroidChart |
-| 标签频率统计 | 未开始 | |
-| 总结文案生成 | 未开始 | 规则版优先 |
-
-### 5.5 情绪日历模块
-
-| 任务 | 状态 | 备注 |
-|---|---|---|
-| 月历 UI | 未开始 | |
-| 日期情绪标记 | 未开始 | |
-| 单日详情查看 | 未开始 | |
-
-### 5.6 建议模块
-
-| 任务 | 状态 | 备注 |
-|---|---|---|
-| 建议生成规则 | 未开始 | |
-| 今日建议卡片 | 未开始 | |
-| 首页建议展示 | 未开始 | |
-
-### 5.7 匿名社区模块
-
-| 任务 | 状态 | 备注 |
-|---|---|---|
-| 社区列表页 | 未开始 | |
-| 发帖页 | 未开始 | |
-| 标签筛选 | 未开始 | |
-| 点赞/支持按钮 | 未开始 | |
-| Firestore 帖子存储 | 未开始 | |
-| 基础内容审核 | 未开始 | |
+## 6. 下一步（建议迭代顺序）
 
-### 5.8 个人中心与设置
-
-| 任务 | 状态 | 备注 |
-|---|---|---|
-| 个人中心页 | 未开始 | |
-| 隐私设置 | 未开始 | |
-| 免责声明 | 未开始 | |
-| 退出登录 | 未开始 | |
-
----
-
-## 6. 当前优先级
-
-### P0
+1. 完成 `MoodEditor` 页面与 `MoodRecord` 本地 CRUD
+2. 在 Home/Analysis/Calendar 三页接入真实数据读取
+3. 接入规则分析与建议生成的真实调用链
+4. 最后接入 Auth + Community（Firebase 或本地模拟）
 
-- 创建 Android Studio 项目骨架
-- 搭建基础包结构
-- 完成 MainActivity + Bottom Navigation
-- 建立 Room 数据库基础结构
-- 完成情绪记录主流程
-
-### P1
-
-- 完成登录注册
-- 完成分析页图表
-- 完成建议页与首页摘要
-- 完成日历页
-
-### P2
-
-- 完成匿名社区发帖与浏览
-- 接入 Firebase
-- 增强 UI 细节与空状态页
-
-### P3
-
-- AI 安慰重写
-- 共鸣匹配
-- 推送提醒
-
----
-
-## 7. MVP 覆盖检查
-
-| MVP 项 | 状态 | 备注 |
-|---|---|---|
-| 注册与登录 | 未开始 | |
-| 创建情绪记录 | 未开始 | |
-| 编辑情绪记录 | 未开始 | |
-| 删除情绪记录 | 未开始 | |
-| 标签与文本输入 | 未开始 | |
-| 基础情绪分析 | 未开始 | |
-| 周度趋势图 | 未开始 | |
-| 月度趋势图 | 未开始 | |
-| 情绪日历 | 未开始 | |
-| 个性化建议 | 未开始 | |
-| 匿名发帖 | 未开始 | |
-| 匿名浏览社区 | 未开始 | |
-| 模拟器可运行 | 未开始 | |
-
----
-
-## 8. 关键决策记录
-
-### 决策 001
-
-- 主题：整体技术栈
-- 结论：采用 Android Studio + Java + XML
-- 原因：符合课程要求，技术风险低，实现路径明确
-- 状态：已确认
-
-### 决策 002
-
-- 主题：架构模式
-- 结论：采用 MVVM + Repository + UseCase
-- 原因：利于页面状态管理、数据隔离与后续扩展
-- 状态：已确认
-
-### 决策 003
-
-- 主题：AI 能力实现顺序
-- 结论：先规则分析，后接入 AI/API
-- 原因：降低早期开发风险，保证 MVP 可交付
-- 状态：已确认
-
-### 决策 004
-
-- 主题：数据存储策略
-- 结论：本地记录优先，社区可后接 Firebase
-- 原因：离线可用性更强，核心功能更稳
-- 状态：已确认
-
----
-
-## 9. 风险与阻塞项
-
-### 当前风险
-
-| 风险 | 影响 | 应对方案 | 状态 |
-|---|---|---|---|
-| AI 分析效果不稳定 | 影响演示可信度 | 使用规则分析兜底 | 持续关注 |
-| 社区模块接入云端工作量较大 | 影响开发周期 | MVP 可先用本地假数据模拟 | 持续关注 |
-| 图表与日历实现细节较多 | 影响 UI 开发时间 | 优先实现基础可用版本 | 持续关注 |
-| 功能过多导致延期 | 影响交付 | 严格区分 MVP 与扩展项 | 持续关注 |
-
-### 当前阻塞项
-
-| 阻塞项 | 描述 | 负责人 | 状态 |
-|---|---|---|---|
-| 暂无 | 当前可以继续推进工程初始化 | 待定 | 开放 |
-
----
-
-## 10. 下一步计划
-
-### 最近 1 次迭代建议
-
-1. 创建 Android Studio 项目
-2. 建立推荐 package 结构
-3. 新增 MainActivity 和 5 个主 Fragment
-4. 接入 Bottom Navigation
-5. 建立 Room 实体、DAO、Database
-6. 先实现 MoodRecord 本地保存与列表读取
-
-### 最近 2-3 次迭代建议
-
-1. 完成情绪记录页 UI 与保存流程
-2. 完成首页摘要与建议卡片
-3. 完成分析页基础统计
-4. 完成日历页基本展示
-
----
-
-## 11. 开发日志
+## 7. 开发日志
 
 ### 2026-03-25
 
-- 已阅读并整理 PRD
-- 已生成技术设计文档
-- 已创建 BOARD 文档用于后续进度追踪
-
----
-
-## 12. 更新模板
-
-后续每次更新可以直接按下面格式追加：
-
-```text
-### YYYY-MM-DD
-- 完成内容：
-- 当前状态：
-- 遇到问题：
-- 下一步：
-```
+- 读取 PRD、技术设计、原看板
+- 生成并落地 Android 分层代码骨架
+- 搭建启动页、主导航与五大主 Fragment
+- 建立 Room Entity/DAO/Database 骨架
+- 更新 BOARD 状态为 `v0.2-skeleton`

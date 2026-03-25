@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.mindease"
+    namespace = "com.mindease"
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
@@ -11,7 +11,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.mindease"
+        applicationId = "com.mindease"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -39,7 +39,13 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
+    implementation(libs.fragment)
     implementation(libs.constraintlayout)
+    implementation(libs.recyclerview)
+    implementation(libs.lifecycle.viewmodel)
+    implementation(libs.lifecycle.livedata)
+    implementation(libs.room.runtime)
+    annotationProcessor(libs.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
