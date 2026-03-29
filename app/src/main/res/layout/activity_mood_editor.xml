@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mood Record"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Step 1/3: choose mood"
+            android:textColor="#666666" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chip_group_mood"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip android:text="Happy" />
+            <com.google.android.material.chip.Chip android:text="Calm" android:checked="true" />
+            <com.google.android.material.chip.Chip android:text="Anxious" />
+            <com.google.android.material.chip.Chip android:text="Sad" />
+            <com.google.android.material.chip.Chip android:text="Angry" />
+        </com.google.android.material.chip.ChipGroup>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="Step 2/3: intensity"
+            android:textColor="#666666" />
+
+        <SeekBar
+            android:id="@+id/seek_intensity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="4"
+            android:progress="2" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="Step 3/3: tags + notes"
+            android:textColor="#666666" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chip_group_tags"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:singleLine="false">
+
+            <com.google.android.material.chip.Chip android:text="study" android:checkable="true" />
+            <com.google.android.material.chip.Chip android:text="exam" android:checkable="true" />
+            <com.google.android.material.chip.Chip android:text="sleep" android:checkable="true" />
+            <com.google.android.material.chip.Chip android:text="friendship" android:checkable="true" />
+        </com.google.android.material.chip.ChipGroup>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_diary"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:gravity="top|start"
+                android:hint="Write how you feel..."
+                android:inputType="textMultiLine"
+                android:minLines="4" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_save_mood"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="16dp"
+            android:text="Save Mood Record"
+            app:cornerRadius="12dp" />
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

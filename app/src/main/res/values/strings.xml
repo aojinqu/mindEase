@@ -5,4 +5,5 @@
     <string name="nav_calendar">Calendar</string>
     <string name="nav_community">Community</string>
     <string name="nav_profile">Profile</string>
+    <string name="msg_mood_saved">Mood record saved</string>
 </resources>

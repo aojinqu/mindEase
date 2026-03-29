@@ -1,5 +1,6 @@
 package com.mindease.domain.usecase;
 
+import com.mindease.domain.model.AnalysisReport;
 import com.mindease.domain.repository.AnalysisRepository;
 
 public class GenerateMoodAnalysisUseCase {
@@ -9,7 +10,7 @@ public class GenerateMoodAnalysisUseCase {
         this.repository = repository;
     }
 
-    public String execute(int days) {
-        return repository.buildSummary(days);
+    public AnalysisReport execute(int days) {
+        return repository.generateReport(days);
     }
 }

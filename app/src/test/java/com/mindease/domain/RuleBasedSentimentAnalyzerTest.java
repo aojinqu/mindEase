@@ -1,0 +1,32 @@
+package com.mindease.domain;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import com.mindease.domain.service.RuleBasedSentimentAnalyzer;
+
+import org.junit.Test;
+
+public class RuleBasedSentimentAnalyzerTest {
+
+    @Test
+    public void analyzeLabel_positiveText_shouldBePositive() {
+        RuleBasedSentimentAnalyzer analyzer = new RuleBasedSentimentAnalyzer();
+        String label = analyzer.analyzeLabel("I feel good and hopeful today", 4);
+        assertEquals("positive", label);
+    }
+
+    @Test
+    public void analyzeLabel_negativeText_shouldBeNegative() {
+        RuleBasedSentimentAnalyzer analyzer = new RuleBasedSentimentAnalyzer();
+        String label = analyzer.analyzeLabel("I feel stressed and lonely", 2);
+        assertEquals("negative", label);
+    }
+
+    @Test
+    public void analyzeScore_emptyText_shouldStillUseIntensity() {
+        RuleBasedSentimentAnalyzer analyzer = new RuleBasedSentimentAnalyzer();
+        float score = analyzer.analyzeScore("", 5);
+        assertTrue(score > 0f);
+    }
+}

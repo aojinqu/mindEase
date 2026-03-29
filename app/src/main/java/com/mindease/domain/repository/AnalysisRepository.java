@@ -1,5 +1,7 @@
 package com.mindease.domain.repository;
 
+import com.mindease.domain.model.AnalysisReport;
+
 public interface AnalysisRepository {
-    String buildSummary(int days);
+    AnalysisReport generateReport(int days);
 }

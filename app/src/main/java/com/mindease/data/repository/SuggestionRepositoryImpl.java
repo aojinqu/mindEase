@@ -4,13 +4,22 @@ import com.mindease.domain.model.Suggestion;
 import com.mindease.domain.repository.SuggestionRepository;
 
 public class SuggestionRepositoryImpl implements SuggestionRepository {
+    private Suggestion latestSuggestion;
+
     @Override
     public void save(Suggestion suggestion) {
-        // Skeleton: connect to local Room suggestions table.
+        latestSuggestion = suggestion;
     }
 
     @Override
     public Suggestion latest() {
-        return new Suggestion("local-placeholder", "Take a short mindful break.", "relax");
+        if (latestSuggestion == null) {
+            latestSuggestion = new Suggestion(
+                    "local-placeholder",
+                    "Take a short mindful break.",
+                    "relax"
+            );
+        }
+        return latestSuggestion;
     }
 }

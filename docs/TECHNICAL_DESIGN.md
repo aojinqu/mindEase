@@ -845,3 +845,24 @@ AnalysisFragment 请求近 7/30 天数据
 ## 13. 总结
 
 MindEase 的技术设计应围绕“本地优先、结构清晰、规则可落地、AI 可扩展”展开。对课程项目而言，最合理的实现路径是先用 Java + XML + Room + Firebase 构建稳定的 MVP，再通过规则分析保证核心体验，最后根据时间接入更强的 AI 能力。该方案既符合 PRD 的产品定位，也能在 Android Studio 环境下以较低风险完成开发与演示。
+
+## 14. 测试模块设计（新增）
+
+### 14.1 测试分层
+
+- Domain 单元测试：验证规则分析、建议生成、用例编排
+- Repository 单元测试：验证核心 CRUD 与时间窗口查询逻辑
+- UI/集成测试（后续）：验证页面主流程联动
+
+### 14.2 覆盖重点
+
+- `MoodRepository`：创建/更新/删除/最近 N 天查询
+- `RuleBasedSentimentAnalyzer`：positive/neutral/negative 判定
+- `GenerateMoodAnalysisUseCase`：统计正确性与摘要文本
+- `GenerateSuggestionUseCase`：负向聚集时触发减压建议
+
+### 14.3 执行策略
+
+- 日常开发执行 `./gradlew test`
+- 提交前至少跑通核心单测
+- 出现回归时补充对应失败用例后再修复

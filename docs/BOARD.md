@@ -2,7 +2,7 @@
 
 ## 1. 当前状态
 
-- 项目阶段：`v0.2-skeleton`（骨架已落地）
+- 项目阶段：`v0.3-mvp-ui`（MVP 核心 UI/UX 已落地）
 - 开发状态：`进行中`
 - 更新时间：`2026-03-25`
 
@@ -61,7 +61,7 @@
   - `AnalysisRepository`
   - `SuggestionRepository`
   - `CommunityRepository`
-- 已新增 Repository 实现占位类（后续补真实数据流）
+- 已新增 Repository 实现并打通核心内存数据流（Room 持久化待接入）
 - 已新增 UseCase 骨架：
   - `CreateMoodRecordUseCase`
   - `GetRecentMoodRecordsUseCase`
@@ -95,45 +95,46 @@
 - 搭建基础 package 结构：`已完成`
 - MainActivity + Bottom Navigation：`已完成`
 - Room 基础结构：`已完成`
-- 情绪记录主流程：`未开始`
+- 情绪记录主流程：`已完成（领域层核心逻辑）`
 
 ### 3.2 P1（MVP核心能力）
 
 - 登录注册：`未开始`
-- 分析页图表：`未开始`
-- 建议页与首页摘要：`未开始`
-- 日历页：`未开始`
+- 分析页图表：`已完成（已接入真实统计数据流）`
+- 建议页与首页摘要：`已完成（已接入实时分析/建议）`
+- 日历页：`已完成（已接入最近记录真实数据）`
 
 ### 3.3 P2（增强能力）
 
-- 匿名社区发帖与浏览：`未开始`
+- 匿名社区发帖与浏览：`已完成（已接入真实发帖/筛选数据流）`
 - Firebase 接入：`未开始`
 - UI细化与空状态：`未开始`
 
 ## 4. MVP覆盖检查（更新后）
 
 - 注册与登录：`未完成`
-- 创建/编辑/删除情绪记录：`未完成`
-- 标签与文本输入：`未完成`
-- 基础情绪分析：`未完成`
-- 周/月趋势图：`未完成`
-- 情绪日历：`未完成`
-- 个性化建议：`未完成`
-- 匿名发帖与浏览：`未完成`
-- 模拟器可运行：`待本轮编译验证`
+- 创建/编辑/删除情绪记录：`已完成（领域层）`
+- 标签与文本输入：`已完成（MoodEditor 页面）`
+- 基础情绪分析：`已完成（规则分析）`
+- 周/月趋势图：`已完成（UI 占位图与筛选交互）`
+- 情绪日历：`已完成（MVP 页面）`
+- 个性化建议：`已完成（规则建议）`
+- 匿名发帖与浏览：`已完成（MVP 页面）`
+- 页面真实数据流：`已完成（MoodEditor -> Home/Analysis/Calendar/Community）`
+- 模拟器可运行：`已通过 assembleDebug 构建验证`
 
 ## 5. 风险与备注
 
-- 当前为“可编译骨架优先”，业务逻辑仍为占位实现
+- 已完成核心领域逻辑 + MVP 核心 UI 页面 + 页面真实数据绑定
 - Firebase、图表和AI能力未接入
 - 需要下一阶段尽快打通 `MoodRecord` 的真实本地增删改查链路
 
 ## 6. 下一步（建议迭代顺序）
 
-1. 完成 `MoodEditor` 页面与 `MoodRecord` 本地 CRUD
-2. 在 Home/Analysis/Calendar 三页接入真实数据读取
-3. 接入规则分析与建议生成的真实调用链
-4. 最后接入 Auth + Community（Firebase 或本地模拟）
+1. 将 `MoodRepository` 从内存实现切换为 Room 持久化
+2. 在 Analysis 页面接入真实图表组件（MPAndroidChart）
+3. 在 Calendar 页面实现按日期点击查看详情
+4. 接入 Auth + 用户隔离（按 user_id 管理记录）
 
 ## 7. 开发日志
 
@@ -144,3 +145,36 @@
 - 搭建启动页、主导航与五大主 Fragment
 - 建立 Room Entity/DAO/Database 骨架
 - 更新 BOARD 状态为 `v0.2-skeleton`
+- 完成 MVP 核心 UI/UX 页面（Home / MoodEditor / Analysis / Calendar / Community / Profile）
+- 更新 BOARD 状态为 `v0.3-mvp-ui`
+- 实现应用级 `AppContainer`，统一仓储与用例实例
+- 完成 `MoodEditor` 真正写入记录并触发分析与建议
+- 完成 Home/Analysis/Calendar/Community 页面真实数据读取与刷新
+- 验证通过：`gradlew test`、`gradlew assembleDebug`
+
+## 8. 测试模块（新增）
+
+### 8.1 目标
+
+- 将“核心能力 + 自动化测试”作为同一迭代交付物
+- 保证主流程改动后可快速回归
+
+### 8.2 当前状态
+
+- 核心单元测试：`进行中`（本轮已补齐核心用例）
+- UI 自动化测试：`未开始`
+
+### 8.3 测试任务看板
+
+| 任务 | 状态 | 备注 |
+|---|---|---|
+| MoodRepository CRUD 测试 | 已完成 | 覆盖 create/update/delete/getRecent |
+| Sentiment Analyzer 测试 | 已完成 | 覆盖 positive/negative/空文本 |
+| 核心链路用例测试 | 已完成 | 覆盖 create -> analysis -> suggestion |
+| UI 流程测试 | 进行中 | 关键页面已落地，后续接入 Espresso |
+
+### 8.4 下一步
+
+1. 补充 Room DAO 仿真测试
+2. 新增 ViewModel 层测试
+3. 在 CI 中接入 `gradlew test`
