@@ -5,6 +5,7 @@ import androidx.room.RoomDatabase;
 
 import com.mindease.data.local.dao.AnalysisSnapshotDao;
 import com.mindease.data.local.dao.MoodRecordDao;
+import com.mindease.data.local.dao.MoodRecordTagDao;
 import com.mindease.data.local.dao.MoodTagDao;
 import com.mindease.data.local.dao.SuggestionDao;
 import com.mindease.data.local.entity.AnalysisSnapshotEntity;
@@ -28,6 +29,8 @@ public abstract class MindEaseDatabase extends RoomDatabase {
     public abstract MoodRecordDao moodRecordDao();
 
     public abstract MoodTagDao moodTagDao();
+
+    public abstract MoodRecordTagDao moodRecordTagDao();
 
     public abstract SuggestionDao suggestionDao();
 

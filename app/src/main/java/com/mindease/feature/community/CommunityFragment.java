@@ -136,7 +136,7 @@ public class CommunityFragment extends Fragment {
         primaryTagTextView.setText("#" + first.emotionTag.toLowerCase(Locale.US));
         primaryContentTextView.setText(first.content);
         primaryMetaTextView.setText(
-                "posted " + dateFormat.format(first.createdAt)
+                first.anonymousName + " posted " + dateFormat.format(first.createdAt)
                         + " | support " + first.supportCount
                         + " | like " + first.likeCount
         );
@@ -145,6 +145,7 @@ public class CommunityFragment extends Fragment {
         for (CommunityPost post : posts) {
             postLabels.add(
                     "#" + post.emotionTag + " | "
+                            + post.anonymousName + " | "
                             + post.content
                             + " | " + dateFormat.format(post.createdAt)
             );

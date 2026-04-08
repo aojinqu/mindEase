@@ -39,7 +39,7 @@ public class PostDetailActivity extends AppCompatActivity {
         tagTextView.setText("#" + post.emotionTag.toLowerCase(Locale.US));
         contentTextView.setText(post.content);
         metaTextView.setText(
-                "posted " + format.format(post.createdAt)
+                post.anonymousName + " posted " + format.format(post.createdAt)
                         + " | support " + post.supportCount
                         + " | like " + post.likeCount
         );

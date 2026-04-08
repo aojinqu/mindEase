@@ -4,6 +4,7 @@ import com.mindease.domain.model.AnalysisReport;
 import com.mindease.domain.model.MoodRecord;
 import com.mindease.domain.repository.AnalysisRepository;
 import com.mindease.domain.repository.MoodRepository;
+import com.mindease.domain.service.AiAnalysisService;
 import com.mindease.domain.service.RuleBasedSentimentAnalyzer;
 
 import java.util.HashMap;
@@ -13,10 +14,20 @@ import java.util.Map;
 public class AnalysisRepositoryImpl implements AnalysisRepository {
     private final MoodRepository moodRepository;
     private final RuleBasedSentimentAnalyzer analyzer;
+    private final AiAnalysisService aiAnalysisService;
 
     public AnalysisRepositoryImpl(MoodRepository moodRepository, RuleBasedSentimentAnalyzer analyzer) {
+        this(moodRepository, analyzer, new AiAnalysisService());
+    }
+
+    public AnalysisRepositoryImpl(
+            MoodRepository moodRepository,
+            RuleBasedSentimentAnalyzer analyzer,
+            AiAnalysisService aiAnalysisService
+    ) {
         this.moodRepository = moodRepository;
         this.analyzer = analyzer;
+        this.aiAnalysisService = aiAnalysisService;
     }
 
     @Override
@@ -41,7 +52,17 @@ public class AnalysisRepositoryImpl implements AnalysisRepository {
             }
         }
 
-        String summary = buildSummaryText(days, records.size(), positive, neutral, negative, tagFrequency);
+        String summary = aiAnalysisService.generateSummaryWithFallback(
+                days,
+                records.size(),
+                positive,
+                neutral,
+                negative,
+                tagFrequency
+        );
+        if (summary == null || summary.trim().isEmpty()) {
+            summary = buildSummaryText(days, records.size(), positive, neutral, negative, tagFrequency);
+        }
         return new AnalysisReport(records.size(), positive, neutral, negative, tagFrequency, summary);
     }
 

@@ -31,12 +31,54 @@
             android:layout_marginTop="10dp"
             app:singleSelection="true">
 
-            <com.google.android.material.chip.Chip android:text="Happy" />
-            <com.google.android.material.chip.Chip android:text="Calm" android:checked="true" />
-            <com.google.android.material.chip.Chip android:text="Anxious" />
-            <com.google.android.material.chip.Chip android:text="Sad" />
-            <com.google.android.material.chip.Chip android:text="Angry" />
+            <com.google.android.material.chip.Chip
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Happy" />
+            <com.google.android.material.chip.Chip
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:checkable="true"
+                android:text="Calm" />
+            <com.google.android.material.chip.Chip
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Anxious" />
+            <com.google.android.material.chip.Chip
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Sad" />
+            <com.google.android.material.chip.Chip
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Angry" />
         </com.google.android.material.chip.ChipGroup>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_custom_mood"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Add custom mood (e.g. Excited)"
+                android:inputType="textCapWords" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_add_custom_mood"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Add Mood"
+            app:cornerRadius="12dp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -53,6 +95,14 @@
             android:progress="2" />
 
         <TextView
+            android:id="@+id/tv_intensity_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Intensity: 3/5"
+            android:textColor="#666666" />
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
@@ -66,10 +116,26 @@
             android:layout_marginTop="8dp"
             app:singleLine="false">
 
-            <com.google.android.material.chip.Chip android:text="study" android:checkable="true" />
-            <com.google.android.material.chip.Chip android:text="exam" android:checkable="true" />
-            <com.google.android.material.chip.Chip android:text="sleep" android:checkable="true" />
-            <com.google.android.material.chip.Chip android:text="friendship" android:checkable="true" />
+            <com.google.android.material.chip.Chip
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="study" />
+            <com.google.android.material.chip.Chip
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="exam" />
+            <com.google.android.material.chip.Chip
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="sleep" />
+            <com.google.android.material.chip.Chip
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="friendship" />
         </com.google.android.material.chip.ChipGroup>
 
         <com.google.android.material.textfield.TextInputLayout

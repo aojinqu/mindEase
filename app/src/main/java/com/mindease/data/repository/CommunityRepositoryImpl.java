@@ -2,6 +2,11 @@ package com.mindease.data.repository;
 
 import com.mindease.domain.model.CommunityPost;
 import com.mindease.domain.repository.CommunityRepository;
+import com.mindease.domain.repository.UserRepository;
+import com.mindease.domain.service.AnonymousIdentityService;
+import com.mindease.domain.service.ContentModerationService;
+import com.mindease.domain.service.SystemTimeProvider;
+import com.mindease.domain.service.TimeProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,14 +16,45 @@ import java.util.UUID;
 
 public class CommunityRepositoryImpl implements CommunityRepository {
     private final List<CommunityPost> posts = new ArrayList<>();
+    private final UserRepository userRepository;
+    private final AnonymousIdentityService anonymousIdentityService;
+    private final ContentModerationService moderationService;
+    private final TimeProvider timeProvider;
+
+    public CommunityRepositoryImpl() {
+        this(
+                new UserRepositoryImpl(),
+                new AnonymousIdentityService(),
+                new ContentModerationService(),
+                new SystemTimeProvider()
+        );
+    }
+
+    public CommunityRepositoryImpl(
+            UserRepository userRepository,
+            AnonymousIdentityService anonymousIdentityService,
+            ContentModerationService moderationService,
+            TimeProvider timeProvider
+    ) {
+        this.userRepository = userRepository;
+        this.anonymousIdentityService = anonymousIdentityService;
+        this.moderationService = moderationService;
+        this.timeProvider = timeProvider;
+    }
 
     @Override
     public void createPost(String content, String emotionTag) {
+        String cleaned = moderationService.sanitize(content);
+        if (cleaned.isEmpty()) {
+            return;
+        }
+        String userId = userRepository.currentUserId();
         CommunityPost post = new CommunityPost(
                 UUID.randomUUID().toString(),
-                content,
+                anonymousIdentityService.displayNameForUser(userId),
+                cleaned,
                 emotionTag,
-                System.currentTimeMillis(),
+                timeProvider.nowMillis(),
                 0,
                 0
         );

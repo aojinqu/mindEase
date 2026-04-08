@@ -2,8 +2,10 @@ package com.mindease.feature.mood;
 
 import android.text.TextUtils;
 import android.os.Bundle;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,7 +31,9 @@ public class MoodEditorActivity extends AppCompatActivity {
     private ChipGroup moodGroup;
     private ChipGroup tagsGroup;
     private TextInputEditText diaryEditText;
+    private TextInputEditText customMoodEditText;
     private android.widget.SeekBar intensitySeek;
+    private TextView intensityValueText;
     private ListView recentListView;
     private MoodRecord selectedRecord;
     private final List<MoodRecord> recentRecords = new ArrayList<>();
@@ -46,19 +50,38 @@ public class MoodEditorActivity extends AppCompatActivity {
         moodGroup = findViewById(R.id.chip_group_mood);
         tagsGroup = findViewById(R.id.chip_group_tags);
         diaryEditText = findViewById(R.id.et_diary);
+        customMoodEditText = findViewById(R.id.et_custom_mood);
         intensitySeek = findViewById(R.id.seek_intensity);
+        intensityValueText = findViewById(R.id.tv_intensity_value);
         recentListView = findViewById(R.id.lv_recent_records);
         MaterialButton saveButton = findViewById(R.id.btn_save_mood);
         MaterialButton updateButton = findViewById(R.id.btn_update_mood);
         MaterialButton deleteButton = findViewById(R.id.btn_delete_mood);
         MaterialButton clearSelectionButton = findViewById(R.id.btn_clear_selection);
+        MaterialButton addCustomMoodButton = findViewById(R.id.btn_add_custom_mood);
 
         saveButton.setOnClickListener(v -> createRecord());
         updateButton.setOnClickListener(v -> updateSelectedRecord());
         deleteButton.setOnClickListener(v -> deleteSelectedRecord());
         clearSelectionButton.setOnClickListener(v -> clearSelection());
+        addCustomMoodButton.setOnClickListener(v -> addCustomMoodFromInput());
 
         recentListView.setOnItemClickListener((parent, view, position, id) -> selectRecord(position));
+        intensitySeek.setOnSeekBarChangeListener(new android.widget.SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(android.widget.SeekBar seekBar, int progress, boolean fromUser) {
+                updateIntensityLabel(progress + 1);
+            }
+
+            @Override
+            public void onStartTrackingTouch(android.widget.SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(android.widget.SeekBar seekBar) {
+            }
+        });
+        updateIntensityLabel(getSelectedIntensity());
     }
 
     @Override
@@ -70,7 +93,7 @@ public class MoodEditorActivity extends AppCompatActivity {
     private void createRecord() {
         MoodRecord record = viewModel.create(
                 selectedChipText(moodGroup, "Calm"),
-                intensitySeek.getProgress() + 1,
+                getSelectedIntensity(),
                 getDiaryText(),
                 selectedTags(tagsGroup)
         );
@@ -88,7 +111,7 @@ public class MoodEditorActivity extends AppCompatActivity {
         MoodRecord updated = new MoodRecord(
                 selectedRecord.id,
                 selectedChipText(moodGroup, selectedRecord.moodType),
-                intensitySeek.getProgress() + 1,
+                getSelectedIntensity(),
                 getDiaryText(),
                 selectedTags(tagsGroup),
                 selectedRecord.createdAt
@@ -145,8 +168,10 @@ public class MoodEditorActivity extends AppCompatActivity {
     private void clearForm() {
         intensitySeek.setProgress(2);
         diaryEditText.setText("");
+        customMoodEditText.setText("");
         clearChipChecks(moodGroup);
         clearChipChecks(tagsGroup);
+        updateIntensityLabel(getSelectedIntensity());
     }
 
     private void applySelectionToForm(MoodRecord record) {
@@ -176,12 +201,18 @@ public class MoodEditorActivity extends AppCompatActivity {
     }
 
     private void setSelectedChipByText(ChipGroup chipGroup, String text) {
+        boolean matched = false;
         for (int i = 0; i < chipGroup.getChildCount(); i++) {
             if (!(chipGroup.getChildAt(i) instanceof Chip)) {
                 continue;
             }
             Chip chip = (Chip) chipGroup.getChildAt(i);
-            chip.setChecked(text.equalsIgnoreCase(chip.getText().toString()));
+            boolean shouldCheck = text.equalsIgnoreCase(chip.getText().toString());
+            chip.setChecked(shouldCheck);
+            matched = matched || shouldCheck;
+        }
+        if (!matched && chipGroup == moodGroup && !TextUtils.isEmpty(text)) {
+            addMoodChipIfMissing(text, true);
         }
     }
 
@@ -221,5 +252,52 @@ public class MoodEditorActivity extends AppCompatActivity {
             }
         }
         return tags;
+    }
+
+    private void addCustomMoodFromInput() {
+        String customMood = customMoodEditText.getText() == null
+                ? ""
+                : customMoodEditText.getText().toString().trim();
+        if (TextUtils.isEmpty(customMood)) {
+            Toast.makeText(this, "Please input a custom mood", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        addMoodChipIfMissing(customMood, true);
+        customMoodEditText.setText("");
+    }
+
+    private void addMoodChipIfMissing(String moodText, boolean select) {
+        for (int i = 0; i < moodGroup.getChildCount(); i++) {
+            if (!(moodGroup.getChildAt(i) instanceof Chip)) {
+                continue;
+            }
+            Chip chip = (Chip) moodGroup.getChildAt(i);
+            if (!moodText.equalsIgnoreCase(chip.getText().toString())) {
+                continue;
+            }
+            if (select) {
+                chip.setChecked(true);
+            }
+            return;
+        }
+        Chip chip = new Chip(this);
+        chip.setText(moodText);
+        chip.setCheckable(true);
+        chip.setLayoutParams(new ChipGroup.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+        moodGroup.addView(chip);
+        if (select) {
+            chip.setChecked(true);
+        }
+    }
+
+    private int getSelectedIntensity() {
+        return intensitySeek.getProgress() + 1;
+    }
+
+    private void updateIntensityLabel(int intensity) {
+        intensityValueText.setText("Intensity: " + intensity + "/5");
     }
 }

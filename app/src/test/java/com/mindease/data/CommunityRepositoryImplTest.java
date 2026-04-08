@@ -23,6 +23,7 @@ public class CommunityRepositoryImplTest {
         assertEquals(2, posts.size());
         assertEquals("second post", posts.get(0).content);
         assertEquals("first post", posts.get(1).content);
+        assertTrue(posts.get(0).anonymousName != null && !posts.get(0).anonymousName.isEmpty());
     }
 
     @Test
@@ -38,5 +39,15 @@ public class CommunityRepositoryImplTest {
 
         List<CommunityPost> allPosts = repository.listPostsByTag("All");
         assertEquals(3, allPosts.size());
+    }
+
+    @Test
+    public void createPost_withBannedWords_shouldBeSanitized() {
+        CommunityRepositoryImpl repository = new CommunityRepositoryImpl();
+        repository.createPost("I hate this exam", "Stress");
+
+        List<CommunityPost> posts = repository.listPosts();
+        assertEquals(1, posts.size());
+        assertTrue(posts.get(0).content.contains("****"));
     }
 }

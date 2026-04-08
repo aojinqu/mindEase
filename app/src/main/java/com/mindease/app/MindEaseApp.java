@@ -11,8 +11,8 @@ public class MindEaseApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        appContainer = new AppContainer();
         sessionManager = new SessionManager(this);
+        appContainer = new AppContainer(this, sessionManager);
     }
 
     public AppContainer getAppContainer() {

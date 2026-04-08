@@ -209,12 +209,18 @@
 
 ### 9.2 后端/数据层未完成
 
-- 账号体系未接入真实认证（Firebase Auth 或自建服务未接入，`AuthRepository` 仍是占位实现）。
-- 用户隔离未生效（`UserRepository` 返回固定 `guest`，记录未按真实 `user_id` 隔离）。
-- Room 持久化未打通主链路（实体/DAO 已有，但 `MoodRepository` 仍为内存 Map 实现）。
-- 社区云端数据未接入（Firestore/远程 API 未接入，当前为本地内存帖子）。
-- 社区内容审核与匿名身份映射服务未实现（文档要求的 moderation/anonymous identity 仍缺）。
-- AI 分析通道未接入（当前仅规则分析，外部 AI API 与失败降级策略未形成完整实现）。
+已在 `2026-04-08` 本轮完成（本地后端闭环）：
+
+- 账号仓储占位已替换：`AuthRepositoryImpl` 已接入 `SessionManager` 登录态读取。
+- 用户隔离已生效：`UserRepositoryImpl` 基于登录邮箱生成稳定 `user_id`（不再固定 `guest`）。
+- Room 主链路已打通：`RoomMoodRepository` 已接入 `MoodRecordDao/MoodTagDao/MoodRecordTagDao`，支持按 `user_id` 的记录增删改查与标签关联持久化。
+- 社区内容审核与匿名身份映射已实现：新增 `ContentModerationService`、`AnonymousIdentityService`，帖子展示已包含匿名名且发布内容会做审核清洗。
+- AI 分析通道与降级链路已形成：新增 `AiAnalysisService`，分析流程先尝试 AI 总结，失败自动回退规则分析文案。
+- 建议数据已按用户隔离：`SuggestionRepositoryImpl` 由全局单例建议改为按 `user_id` 存取。
+
+仍待外部平台/后续迭代（非本地单机后端可完全闭环项）：
+
+- 社区云端数据未接入（Firestore/远程 API 仍未接入）。
 - 评论/回复、举报、复杂审核等社区增强功能未实现。
 - 多设备同步与远程数据一致性策略未实现。
 
