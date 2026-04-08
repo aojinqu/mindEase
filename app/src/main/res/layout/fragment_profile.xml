@@ -31,18 +31,34 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_profile_nickname"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Nickname" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Nickname: CampusFox"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:layout_marginTop="10dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_profile_anon_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Anonymous name" />
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/tv_profile_email"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Anonymous name: QuietPanda"
+                    android:layout_marginTop="8dp"
                     android:textColor="#666666" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -74,6 +90,22 @@
                     android:layout_marginTop="8dp"
                     android:text="MindEase is a non-medical emotional support tool."
                     android:textColor="#666666" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_profile_save"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Save Profile"
+                    app:cornerRadius="12dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_profile_open_settings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Open Settings"
+                    app:cornerRadius="12dp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

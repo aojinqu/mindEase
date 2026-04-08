@@ -20,11 +20,9 @@
         android:text="Your lightweight emotional companion"
         android:textSize="14sp" />
 
-    <Button
-        android:id="@+id/btn_enter_app"
-        android:layout_width="match_parent"
+    <ProgressBar
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="Enter" />
+        android:layout_marginTop="24dp" />
 
 </LinearLayout>

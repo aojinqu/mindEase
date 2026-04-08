@@ -25,28 +25,25 @@
             app:strokeColor="#E8E8E8"
             app:strokeWidth="1dp">
 
-            <GridLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:columnCount="7"
-                android:padding="12dp"
-                android:rowCount="6">
+                android:orientation="vertical"
+                android:padding="12dp">
 
-                <TextView android:text="1" android:padding="8dp" android:background="#E8F5E9" />
-                <TextView android:text="2" android:padding="8dp" android:background="#FFF3E0" />
-                <TextView android:text="3" android:padding="8dp" android:background="#FFEBEE" />
-                <TextView android:text="4" android:padding="8dp" android:background="#E8F5E9" />
-                <TextView android:text="5" android:padding="8dp" android:background="#E8F5E9" />
-                <TextView android:text="6" android:padding="8dp" android:background="#FFF3E0" />
-                <TextView android:text="7" android:padding="8dp" android:background="#FFEBEE" />
-                <TextView android:text="8" android:padding="8dp" android:background="#E8F5E9" />
-                <TextView android:text="9" android:padding="8dp" android:background="#FFF3E0" />
-                <TextView android:text="10" android:padding="8dp" android:background="#FFEBEE" />
-                <TextView android:text="11" android:padding="8dp" android:background="#E8F5E9" />
-                <TextView android:text="12" android:padding="8dp" android:background="#FFF3E0" />
-                <TextView android:text="13" android:padding="8dp" android:background="#FFEBEE" />
-                <TextView android:text="14" android:padding="8dp" android:background="#E8F5E9" />
-            </GridLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tap a date to view details"
+                    android:textColor="#666666" />
+
+                <ListView
+                    android:id="@+id/lv_calendar_dates"
+                    android:layout_width="match_parent"
+                    android:layout_height="220dp"
+                    android:layout_marginTop="8dp"
+                    android:dividerHeight="8dp" />
+            </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
@@ -75,7 +72,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:text="2026-03-25 · mood: calm · intensity: 3"
+                    android:text="Select a date from the list above"
                     android:textColor="#666666" />
 
                 <TextView

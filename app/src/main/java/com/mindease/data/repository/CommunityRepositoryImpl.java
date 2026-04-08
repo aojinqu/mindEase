@@ -46,4 +46,17 @@ public class CommunityRepositoryImpl implements CommunityRepository {
         filtered.sort(Comparator.comparingLong((CommunityPost p) -> p.createdAt).reversed());
         return Collections.unmodifiableList(filtered);
     }
+
+    @Override
+    public CommunityPost getPostById(String postId) {
+        if (postId == null) {
+            return null;
+        }
+        for (CommunityPost post : posts) {
+            if (postId.equals(post.id)) {
+                return post;
+            }
+        }
+        return null;
+    }
 }

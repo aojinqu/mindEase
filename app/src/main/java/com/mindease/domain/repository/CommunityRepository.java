@@ -10,4 +10,6 @@ public interface CommunityRepository {
     List<CommunityPost> listPosts();
 
     List<CommunityPost> listPostsByTag(String emotionTag);
+
+    CommunityPost getPostById(String postId);
 }

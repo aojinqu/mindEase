@@ -66,11 +66,40 @@
                     android:text="Positive 2 · Neutral 3 · Negative 2"
                     android:textColor="#666666" />
 
-                <View
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/chart_mood_trend"
                     android:layout_width="match_parent"
                     android:layout_height="120dp"
                     android:layout_marginTop="12dp"
                     android:background="#EEF4FF" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:cardCornerRadius="16dp"
+            app:strokeColor="#E8E8E8"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sentiment Distribution"
+                    android:textStyle="bold" />
+
+                <com.github.mikephil.charting.charts.BarChart
+                    android:id="@+id/chart_sentiment_distribution"
+                    android:layout_width="match_parent"
+                    android:layout_height="140dp"
+                    android:layout_marginTop="12dp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

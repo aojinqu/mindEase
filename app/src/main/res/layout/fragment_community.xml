@@ -31,15 +31,32 @@
             <com.google.android.material.chip.Chip android:id="@+id/chip_filter_sleep" android:text="Sleep" android:checkable="true" />
         </com.google.android.material.chip.ChipGroup>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_create_post"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Create Anonymous Post"
-            app:cornerRadius="12dp" />
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_create_post"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Create Post"
+                app:cornerRadius="12dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_open_detail"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:text="Open Detail"
+                app:cornerRadius="12dp" />
+        </LinearLayout>
 
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_community_primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -79,13 +96,13 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <TextView
-            android:id="@+id/tv_community_more_posts"
+        <ListView
+            android:id="@+id/lv_community_posts"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="220dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="16dp"
-            android:textColor="#666666" />
+            android:dividerHeight="8dp" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
