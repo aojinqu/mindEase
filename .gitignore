@@ -27,3 +27,5 @@ Thumbs.db
 # skill
 .agents/
 skills/
+
+app/google-services.json
