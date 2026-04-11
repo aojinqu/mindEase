@@ -17,6 +17,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.mindease.R;
 import com.mindease.app.AppContainer;
 import com.mindease.app.MindEaseApp;
+import com.mindease.common.result.DataCallback;
 import com.mindease.domain.model.CommunityComment;
 import com.mindease.domain.model.CommunityPost;
 
@@ -67,24 +68,7 @@ public class PostDetailActivity extends AppCompatActivity {
         commentAdapter = new CommentAdapter();
         commentsListView.setAdapter(commentAdapter);
 
-        CommunityPost post = container.communityRepository.getPostById(postId);
-        if (post == null) {
-            tagTextView.setText("#unknown");
-            contentTextView.setText("Post not found.");
-            metaTextView.setText("");
-            return;
-        }
-
-        likePostButton.setOnClickListener(v -> {
-            if (!viewModel.likePost(container, postId)) {
-                String message = viewModel.hasLikedPost(container, postId)
-                        ? "You already liked this post"
-                        : "Failed to like post.";
-                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-                return;
-            }
-            refreshPostAndComments();
-        });
+        likePostButton.setOnClickListener(v -> likePost());
         sendButton.setOnClickListener(v -> submitCommentOrReply());
         likeCommentButton.setOnClickListener(v -> likeSelectedComment());
         deleteCommentButton.setOnClickListener(v -> deleteSelectedComment());
@@ -94,14 +78,24 @@ public class PostDetailActivity extends AppCompatActivity {
     }
 
     private void refreshPostAndComments() {
-        CommunityPost post = container.communityRepository.getPostById(postId);
-        if (post == null) {
-            tagTextView.setText("#unknown");
-            contentTextView.setText("Post not found.");
-            metaTextView.setText("");
-            return;
-        }
+        viewModel.getPost(container, postId, new DataCallback<CommunityPost>() {
+            @Override
+            public void onSuccess(CommunityPost post) {
+                bindPost(post);
+                loadComments();
+            }
 
+            @Override
+            public void onError(String message) {
+                tagTextView.setText("#unknown");
+                contentTextView.setText("Post not found.");
+                metaTextView.setText("");
+                Toast.makeText(PostDetailActivity.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void bindPost(CommunityPost post) {
         tagTextView.setText("#" + post.emotionTag.toLowerCase(Locale.US));
         contentTextView.setText(post.content);
         metaTextView.setText(
@@ -109,15 +103,41 @@ public class PostDetailActivity extends AppCompatActivity {
                         + "  Like " + post.likeCount
                         + "  Comment " + post.commentCount
         );
-        boolean hasLikedPost = viewModel.hasLikedPost(container, postId);
-        likePostButton.setText(hasLikedPost ? "Liked" : "Like");
-        likePostButton.setEnabled(!hasLikedPost);
+        likePostButton.setText("Checking...");
+        likePostButton.setEnabled(false);
+        viewModel.hasLikedPost(container, postId, new DataCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean hasLikedPost) {
+                likePostButton.setText(Boolean.TRUE.equals(hasLikedPost) ? "Liked" : "Like");
+                likePostButton.setEnabled(!Boolean.TRUE.equals(hasLikedPost));
+            }
 
-        List<CommunityComment> comments = viewModel.loadComments(container, postId);
-        commentItems.clear();
-        commentItems.addAll(comments);
-        commentAdapter.notifyDataSetChanged();
-        updateCommentActionState();
+            @Override
+            public void onError(String message) {
+                likePostButton.setText("Like");
+                likePostButton.setEnabled(true);
+            }
+        });
+    }
+
+    private void loadComments() {
+        viewModel.loadComments(container, postId, new DataCallback<List<CommunityComment>>() {
+            @Override
+            public void onSuccess(List<CommunityComment> comments) {
+                commentItems.clear();
+                commentItems.addAll(comments);
+                commentAdapter.notifyDataSetChanged();
+                updateCommentActionState();
+            }
+
+            @Override
+            public void onError(String message) {
+                commentItems.clear();
+                commentAdapter.notifyDataSetChanged();
+                updateCommentActionState();
+                Toast.makeText(PostDetailActivity.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void submitCommentOrReply() {
@@ -127,20 +147,44 @@ public class PostDetailActivity extends AppCompatActivity {
             return;
         }
 
-        CommunityComment result;
-        if (replyingToCommentId == null) {
-            result = viewModel.addComment(container, postId, text);
-        } else {
-            result = viewModel.replyToComment(container, postId, replyingToCommentId, text);
-        }
-        if (result == null) {
-            Toast.makeText(this, "Failed to publish comment.", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        DataCallback<CommunityComment> callback = new DataCallback<CommunityComment>() {
+            @Override
+            public void onSuccess(CommunityComment result) {
+                commentEditText.setText("");
+                clearSelection();
+                refreshPostAndComments();
+            }
 
-        commentEditText.setText("");
-        clearSelection();
-        refreshPostAndComments();
+            @Override
+            public void onError(String message) {
+                Toast.makeText(PostDetailActivity.this, message, Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        if (replyingToCommentId == null) {
+            viewModel.addComment(container, postId, text, callback);
+        } else {
+            viewModel.replyToComment(container, postId, replyingToCommentId, text, callback);
+        }
+    }
+
+    private void likePost() {
+        likePostButton.setEnabled(false);
+        viewModel.likePost(container, postId, new DataCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean liked) {
+                if (!Boolean.TRUE.equals(liked)) {
+                    Toast.makeText(PostDetailActivity.this, "You already liked this post", Toast.LENGTH_SHORT).show();
+                }
+                refreshPostAndComments();
+            }
+
+            @Override
+            public void onError(String message) {
+                likePostButton.setEnabled(true);
+                Toast.makeText(PostDetailActivity.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void likeSelectedComment() {
@@ -148,14 +192,22 @@ public class PostDetailActivity extends AppCompatActivity {
             Toast.makeText(this, "Select a comment first.", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (!viewModel.likeComment(container, postId, selectedCommentId)) {
-            String message = viewModel.hasLikedComment(container, postId, selectedCommentId)
-                    ? "You already liked this comment"
-                    : "Failed to like comment.";
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-            return;
-        }
-        refreshPostAndComments();
+        likeCommentButton.setEnabled(false);
+        viewModel.likeComment(container, postId, selectedCommentId, new DataCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean liked) {
+                if (!Boolean.TRUE.equals(liked)) {
+                    Toast.makeText(PostDetailActivity.this, "You already liked this comment", Toast.LENGTH_SHORT).show();
+                }
+                refreshPostAndComments();
+            }
+
+            @Override
+            public void onError(String message) {
+                updateCommentActionState();
+                Toast.makeText(PostDetailActivity.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void deleteSelectedComment() {
@@ -163,13 +215,18 @@ public class PostDetailActivity extends AppCompatActivity {
             Toast.makeText(this, "Select a comment first.", Toast.LENGTH_SHORT).show();
             return;
         }
-        boolean deleted = viewModel.deleteComment(container, postId, selectedCommentId);
-        if (!deleted) {
-            Toast.makeText(this, "Delete failed: only author can delete, and parent with replies cannot be deleted.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        clearSelection();
-        refreshPostAndComments();
+        viewModel.deleteComment(container, postId, selectedCommentId, new DataCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean deleted) {
+                clearSelection();
+                refreshPostAndComments();
+            }
+
+            @Override
+            public void onError(String message) {
+                Toast.makeText(PostDetailActivity.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void clearSelection() {
@@ -180,10 +237,26 @@ public class PostDetailActivity extends AppCompatActivity {
     }
 
     private void updateCommentActionState() {
-        boolean hasSelection = selectedCommentId != null;
-        boolean alreadyLiked = hasSelection && viewModel.hasLikedComment(container, postId, selectedCommentId);
-        likeCommentButton.setEnabled(hasSelection && !alreadyLiked);
-        likeCommentButton.setText(alreadyLiked ? "Liked" : "Like Comment");
+        if (selectedCommentId == null) {
+            likeCommentButton.setEnabled(false);
+            likeCommentButton.setText("Like Comment");
+            return;
+        }
+        likeCommentButton.setText("Checking...");
+        likeCommentButton.setEnabled(false);
+        viewModel.hasLikedComment(container, postId, selectedCommentId, new DataCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean alreadyLiked) {
+                likeCommentButton.setEnabled(!Boolean.TRUE.equals(alreadyLiked));
+                likeCommentButton.setText(Boolean.TRUE.equals(alreadyLiked) ? "Liked" : "Like Comment");
+            }
+
+            @Override
+            public void onError(String message) {
+                likeCommentButton.setEnabled(true);
+                likeCommentButton.setText("Like Comment");
+            }
+        });
     }
 
     private final class CommentAdapter extends BaseAdapter {
@@ -220,15 +293,28 @@ public class PostDetailActivity extends AppCompatActivity {
             MaterialButton replyButton = view.findViewById(R.id.btn_item_comment_reply);
             MaterialButton deleteButton = view.findViewById(R.id.btn_item_comment_delete);
 
-            String mine = currentUserId.equals(comment.authorUserId) ? "  • You" : "";
+            String mine = currentUserId.equals(comment.authorUserId) ? "  You" : "";
             authorView.setText(comment.anonymousName + mine);
             badgeView.setText(comment.isReply() ? "Reply" : "Comment");
             timeView.setText(format.format(comment.createdAt));
             contentView.setText(comment.content);
             likeView.setText("Like " + comment.likeCount);
-            boolean hasLiked = viewModel.hasLikedComment(container, postId, comment.id);
-            likeButton.setText(hasLiked ? "Liked" : "Like");
-            likeButton.setEnabled(!hasLiked);
+            likeButton.setText("Checking...");
+            likeButton.setEnabled(false);
+
+            viewModel.hasLikedComment(container, postId, comment.id, new DataCallback<Boolean>() {
+                @Override
+                public void onSuccess(Boolean hasLiked) {
+                    likeButton.setText(Boolean.TRUE.equals(hasLiked) ? "Liked" : "Like");
+                    likeButton.setEnabled(!Boolean.TRUE.equals(hasLiked));
+                }
+
+                @Override
+                public void onError(String message) {
+                    likeButton.setText("Like");
+                    likeButton.setEnabled(true);
+                }
+            });
 
             likeButton.setOnClickListener(v -> {
                 selectedCommentId = comment.id;

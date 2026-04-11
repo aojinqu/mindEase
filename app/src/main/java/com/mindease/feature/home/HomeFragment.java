@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.mindease.R;
 import com.mindease.app.AppContainer;
 import com.mindease.app.MindEaseApp;
+import com.mindease.feature.agent.AgentChatActivity;
 import com.mindease.feature.mood.MoodEditorActivity;
 
 import java.util.ArrayList;
@@ -41,6 +42,15 @@ public class HomeFragment extends Fragment {
             Intent intent = new Intent(requireContext(), MoodEditorActivity.class);
             startActivity(intent);
         });
+
+        View openAgentButton = view.findViewById(R.id.btn_open_agent);
+        View openAgentCard = view.findViewById(R.id.card_agent_entry);
+        View.OnClickListener openAgentListener = v -> {
+            Intent intent = new Intent(requireContext(), AgentChatActivity.class);
+            startActivity(intent);
+        };
+        openAgentButton.setOnClickListener(openAgentListener);
+        openAgentCard.setOnClickListener(openAgentListener);
         return view;
     }
 

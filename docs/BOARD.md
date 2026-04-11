@@ -2,7 +2,7 @@
 
 ## 1. 当前状态
 
-- 项目阶段：`v0.4-mvp-frontend-closed`（MVP 前端主流程已闭环）
+- 项目阶段：`v0.6-agent-chat-ui-connected`（Agent 聊天前后端已接通）
 - 开发状态：`进行中`
 - 更新时间：`2026-04-11`
 
@@ -71,7 +71,65 @@
   - `RuleBasedSentimentAnalyzer`
   - `SuggestionEngine`
 
-### 2.5 资源与UI骨架
+### 2.5 Agent 后端（本轮新增）
+
+- 已新增 Domain Model：
+  - `AgentSession`
+  - `AgentMessage`
+  - `AgentPromptContext`
+  - `AgentReply`
+  - `RiskAssessment`
+- 已新增 Room Entity / DAO：
+  - `AgentSessionEntity`
+  - `AgentMessageEntity`
+  - `AgentSessionDao`
+  - `AgentMessageDao`
+- 已新增 Agent Repository 与 UseCase：
+  - `AgentRepository`
+  - `AgentRepositoryImpl`
+  - `StartAgentSessionUseCase`
+  - `SendAgentMessageUseCase`
+  - `GetAgentSessionHistoryUseCase`
+- 已新增 Agent Service：
+  - `PromptContextBuilder`
+  - `RiskGuardService`
+  - `TherapyAgentService`
+- 已完成 Agent 后端核心链路：
+  - 会话创建与消息持久化
+  - 最近情绪记录 / 7天分析 / 最新建议注入 Prompt 上下文
+  - 高风险表达识别与资源引导
+  - 外部中转站 OpenAI 兼容 chat 接口调用
+  - API 失败时回退到本地安抚回复
+- 已在构建层补充：
+  - `INTERNET` 权限
+  - `BuildConfig.CHAT_API_BASE_URL`
+  - `BuildConfig.CHAT_API_KEY`
+  - `BuildConfig.CHAT_MODEL`
+
+### 2.6 Agent 聊天前端（本轮新增）
+
+- 已新增页面与交互层：
+  - `AgentChatActivity`
+  - `AgentChatViewModel`
+  - `AgentMessageAdapter`
+- 已新增聊天 UI 资源：
+  - `activity_agent_chat.xml`
+  - `item_agent_message_user.xml`
+  - `item_agent_message_assistant.xml`
+  - `bg_agent_avatar.xml`
+- 已完成聊天页体验设计：
+  - 顶部“上下文已接入”陪伴卡片
+  - 用户 / Agent 双气泡消息流
+  - 快捷问题按钮
+  - 输入区 + 发送按钮
+  - 发送中、空态、错误态展示
+- 已完成前端接线：
+  - 首页新增 Agent 入口卡片
+  - `HomeFragment` 可跳转进入聊天页
+  - 聊天页已接通 `StartAgentSessionUseCase`、`SendAgentMessageUseCase`、`GetAgentSessionHistoryUseCase`
+  - 消息发送改为后台线程执行，避免主线程阻塞
+
+### 2.7 资源与UI骨架
 
 - 已新增布局：
   - `activity_splash.xml`
@@ -108,7 +166,8 @@
 
 - 匿名社区发帖与浏览：`已完成（含独立发帖页 + 详情页）`
 - Firebase 接入：`未开始`
-- 心理疗愈 Agent：`已规划，未开始`
+- 心理疗愈 Agent 后端：`已完成（会话/消息/Prompt/风控/降级）`
+- 心理疗愈 Agent 前端对话页：`已完成（聊天页 + 首页入口 + 后端接线）`
 - UI细化与空状态：`进行中`
 
 ## 4. MVP覆盖检查（更新后）
@@ -120,7 +179,7 @@
 - 周/月趋势图：`已完成（真实图表组件）`
 - 情绪日历：`已完成（可点击日期查看当日详情）`
 - 个性化建议：`已完成（规则建议）`
-- 心理疗愈 Agent：`未开始`
+- 心理疗愈 Agent：`已完成基础聊天闭环`
 - 匿名发帖与浏览：`已完成（含发帖页、详情页、筛选与跳转）`
 - 页面真实数据流：`已完成（MoodEditor -> Home/Analysis/Calendar/Community）`
 - 模拟器可运行：`已通过 assembleDebug 构建验证`
@@ -128,17 +187,18 @@
 ## 5. 风险与备注
 
 - 已完成核心领域逻辑 + MVP 前端主流程闭环 + 页面真实数据绑定
-- Firebase 与 AI 远程能力未接入
-- 心理疗愈 Agent 需要新增对话页、Prompt 上下文拼装与外部中转站 API 接入
-- 需要下一阶段尽快打通 `MoodRecord` 的真实本地增删改查链路
+- Agent 前后端已完成基础聊天闭环，但尚未接入真实线上中转站联调验证
+- 外部中转站依赖 Gradle 属性配置：`mindease.chat.baseUrl`、`mindease.chat.apiKey`、`mindease.chat.model`
+- 当前远程调用按 OpenAI 兼容 `/chat/completions` 结构实现，如中转站协议不同需再适配 DTO
+- 数据库版本已升级到 `v2`，本地调试阶段采用 `fallbackToDestructiveMigration()`
 
 ## 6. 下一步（建议迭代顺序）
 
-1. 将 `MoodRepository` 从内存实现切换为 Room 持久化
-2. 接入 Auth + 用户隔离（按 user_id 管理记录）
+1. 根据实际外部中转站协议调整 `TherapyAgentService` 请求/响应字段并完成真机联调
+2. 补充聊天页会话列表、重新开始对话与重试交互
 3. 接入 Firebase/Firestore 并替换社区本地内存实现
-4. 接入 AI 分析通道与失败降级策略
-5. 新增心理疗愈 Agent，打通 Prompt 注入用户最新数据与外部中转站 API
+4. 补充 Agent 的 Room 集成测试与异常链路测试
+5. 打磨消息发送中的 loading、失败重试与风险提示视觉层级
 
 ## 7. 开发日志
 
@@ -172,7 +232,14 @@
 
 - 更新 `PRD.md`：新增心理疗愈 Agent 功能定义、用户流程、数据设计与验收标准
 - 更新 `TECHNICAL_DESIGN.md`：新增 Agent 模块、PromptContextBuilder、TherapyAgentService、会话数据表与调用链路
-- 更新 `BOARD.md`：补充 Agent 当前状态、风险与下一步任务
+- 完成 Agent 后端：新增会话/消息表、AgentRepository、PromptContextBuilder、RiskGuardService、TherapyAgentService
+- 接入外部中转站 OpenAI 兼容聊天调用与本地 fallback 降级
+- 在 `AppContainer` 中注入 Agent UseCase，并补充 `INTERNET` 权限与 BuildConfig 配置
+- 完成 Agent 聊天页 UI：新增 `AgentChatActivity`、消息气泡列表、快捷提问、输入区和首页入口卡片
+- 将聊天发送链路切到后台线程，并完成前后端接线
+- 修复根构建缺失的 `google-services` 插件别名，恢复 `gradlew test`
+- 新增 Agent 单测并验证通过：`gradlew test`、`gradlew assembleDebug`
+- 更新 `BOARD.md`：同步 Agent 后端进度、剩余前端接入任务与配置说明
 
 ## 8. 测试模块（新增）
 
@@ -193,12 +260,14 @@
 | MoodRepository CRUD 测试 | 已完成 | 覆盖 create/update/delete/getRecent |
 | Sentiment Analyzer 测试 | 已完成 | 覆盖 positive/negative/空文本 |
 | 核心链路用例测试 | 已完成 | 覆盖 create -> analysis -> suggestion |
+| Agent 后端链路测试 | 已完成 | 覆盖 fallback 回复、上下文持久化、风险识别 |
+| Agent 聊天 UI 构建验证 | 已完成 | `assembleDebug` 通过，页面与跳转已接入 |
 | UI 流程测试 | 进行中 | 关键页面已落地，后续接入 Espresso |
 
 ### 8.4 下一步
 
 1. 补充 Room DAO 仿真测试
-2. 新增 ViewModel 层测试
+2. 新增 Agent ViewModel / 会话页测试
 3. 在 CI 中接入 `gradlew test`
   
   
@@ -231,8 +300,8 @@
 仍待外部平台/后续迭代（非本地单机后端可完全闭环项）：
 
 - 社区云端数据未接入（Firestore/远程 API 仍未接入）。
-- 心理疗愈 Agent 未接入外部中转站大模型 API，Prompt 上下文注入链路尚未实现。
-- Agent 会话存储、风险提示与失败降级链路尚未落地。
+- 心理疗愈 Agent 会话列表、会话切换与历史管理尚未实现。
+- 外部中转站协议尚未用真实线上参数联调，当前按 OpenAI 兼容 chat 接口预留。
 - 评论/回复、举报、复杂审核等社区增强功能未实现。
 - 多设备同步与远程数据一致性策略未实现。
 

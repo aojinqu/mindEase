@@ -3,6 +3,7 @@ package com.mindease.feature.community;
 import androidx.lifecycle.ViewModel;
 
 import com.mindease.app.AppContainer;
+import com.mindease.common.result.DataCallback;
 import com.mindease.domain.model.CommunityComment;
 import com.mindease.domain.model.CommunityPost;
 
@@ -10,43 +11,47 @@ import java.util.List;
 
 public class CommunityViewModel extends ViewModel {
 
-    public List<CommunityPost> loadPosts(AppContainer container, String filter) {
-        return container.communityRepository.listPostsByTag(filter);
+    public void loadPosts(AppContainer container, String filter, DataCallback<List<CommunityPost>> callback) {
+        container.communityRepository.listPostsByTag(filter, callback);
     }
 
-    public void createPost(AppContainer container, String content, String tag) {
-        container.communityRepository.createPost(content, tag);
+    public void createPost(AppContainer container, String content, String tag, DataCallback<CommunityPost> callback) {
+        container.communityRepository.createPost(content, tag, callback);
     }
 
-    public boolean likePost(AppContainer container, String postId) {
-        return container.communityRepository.likePost(postId);
+    public void getPost(AppContainer container, String postId, DataCallback<CommunityPost> callback) {
+        container.communityRepository.getPostById(postId, callback);
     }
 
-    public boolean hasLikedPost(AppContainer container, String postId) {
-        return container.communityRepository.hasLikedPost(postId);
+    public void likePost(AppContainer container, String postId, DataCallback<Boolean> callback) {
+        container.communityRepository.likePost(postId, callback);
     }
 
-    public List<CommunityComment> loadComments(AppContainer container, String postId) {
-        return container.communityRepository.listComments(postId);
+    public void hasLikedPost(AppContainer container, String postId, DataCallback<Boolean> callback) {
+        container.communityRepository.hasLikedPost(postId, callback);
     }
 
-    public CommunityComment addComment(AppContainer container, String postId, String content) {
-        return container.communityRepository.addComment(postId, content);
+    public void loadComments(AppContainer container, String postId, DataCallback<List<CommunityComment>> callback) {
+        container.communityRepository.listComments(postId, callback);
     }
 
-    public CommunityComment replyToComment(AppContainer container, String postId, String parentCommentId, String content) {
-        return container.communityRepository.replyToComment(postId, parentCommentId, content);
+    public void addComment(AppContainer container, String postId, String content, DataCallback<CommunityComment> callback) {
+        container.communityRepository.addComment(postId, content, callback);
     }
 
-    public boolean likeComment(AppContainer container, String postId, String commentId) {
-        return container.communityRepository.likeComment(postId, commentId);
+    public void replyToComment(AppContainer container, String postId, String parentCommentId, String content, DataCallback<CommunityComment> callback) {
+        container.communityRepository.replyToComment(postId, parentCommentId, content, callback);
     }
 
-    public boolean hasLikedComment(AppContainer container, String postId, String commentId) {
-        return container.communityRepository.hasLikedComment(postId, commentId);
+    public void likeComment(AppContainer container, String postId, String commentId, DataCallback<Boolean> callback) {
+        container.communityRepository.likeComment(postId, commentId, callback);
     }
 
-    public boolean deleteComment(AppContainer container, String postId, String commentId) {
-        return container.communityRepository.deleteComment(postId, commentId);
+    public void hasLikedComment(AppContainer container, String postId, String commentId, DataCallback<Boolean> callback) {
+        container.communityRepository.hasLikedComment(postId, commentId, callback);
+    }
+
+    public void deleteComment(AppContainer container, String postId, String commentId, DataCallback<Boolean> callback) {
+        container.communityRepository.deleteComment(postId, commentId, callback);
     }
 }

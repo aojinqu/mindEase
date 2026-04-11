@@ -1,32 +1,35 @@
 package com.mindease.domain.repository;
 
-import com.mindease.domain.model.CommunityPost;
+import com.mindease.common.result.DataCallback;
 import com.mindease.domain.model.CommunityComment;
+import com.mindease.domain.model.CommunityPost;
 
 import java.util.List;
 
 public interface CommunityRepository {
-    void createPost(String content, String emotionTag);
+    void seedDemoPostsIfEmpty();
 
-    List<CommunityPost> listPosts();
+    void createPost(String content, String emotionTag, DataCallback<CommunityPost> callback);
 
-    List<CommunityPost> listPostsByTag(String emotionTag);
+    void listPosts(DataCallback<List<CommunityPost>> callback);
 
-    CommunityPost getPostById(String postId);
+    void listPostsByTag(String emotionTag, DataCallback<List<CommunityPost>> callback);
 
-    boolean likePost(String postId);
+    void getPostById(String postId, DataCallback<CommunityPost> callback);
 
-    boolean hasLikedPost(String postId);
+    void likePost(String postId, DataCallback<Boolean> callback);
 
-    CommunityComment addComment(String postId, String content);
+    void hasLikedPost(String postId, DataCallback<Boolean> callback);
 
-    CommunityComment replyToComment(String postId, String parentCommentId, String content);
+    void addComment(String postId, String content, DataCallback<CommunityComment> callback);
 
-    List<CommunityComment> listComments(String postId);
+    void replyToComment(String postId, String parentCommentId, String content, DataCallback<CommunityComment> callback);
 
-    boolean likeComment(String postId, String commentId);
+    void listComments(String postId, DataCallback<List<CommunityComment>> callback);
 
-    boolean hasLikedComment(String postId, String commentId);
+    void likeComment(String postId, String commentId, DataCallback<Boolean> callback);
 
-    boolean deleteComment(String postId, String commentId);
+    void hasLikedComment(String postId, String commentId, DataCallback<Boolean> callback);
+
+    void deleteComment(String postId, String commentId, DataCallback<Boolean> callback);
 }

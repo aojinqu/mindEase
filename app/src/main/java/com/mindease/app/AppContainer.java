@@ -4,8 +4,10 @@ import android.content.Context;
 
 import androidx.room.Room;
 
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.mindease.common.session.SessionManager;
 import com.mindease.data.local.db.MindEaseDatabase;
+import com.mindease.data.repository.AgentRepositoryImpl;
 import com.mindease.data.repository.AnalysisRepositoryImpl;
 import com.mindease.data.repository.CommunityRepositoryImpl;
 import com.mindease.data.repository.AuthRepositoryImpl;
@@ -13,6 +15,7 @@ import com.mindease.data.repository.MoodRepositoryImpl;
 import com.mindease.data.repository.RoomMoodRepository;
 import com.mindease.data.repository.SuggestionRepositoryImpl;
 import com.mindease.data.repository.UserRepositoryImpl;
+import com.mindease.domain.repository.AgentRepository;
 import com.mindease.domain.repository.AnalysisRepository;
 import com.mindease.domain.repository.AuthRepository;
 import com.mindease.domain.repository.CommunityRepository;
@@ -21,13 +24,19 @@ import com.mindease.domain.repository.SuggestionRepository;
 import com.mindease.domain.repository.UserRepository;
 import com.mindease.domain.service.AnonymousIdentityService;
 import com.mindease.domain.service.ContentModerationService;
+import com.mindease.domain.service.PromptContextBuilder;
+import com.mindease.domain.service.RiskGuardService;
 import com.mindease.domain.service.RuleBasedSentimentAnalyzer;
 import com.mindease.domain.service.SuggestionEngine;
 import com.mindease.domain.service.SystemTimeProvider;
+import com.mindease.domain.service.TherapyAgentService;
 import com.mindease.domain.usecase.CreateMoodRecordUseCase;
+import com.mindease.domain.usecase.GetAgentSessionHistoryUseCase;
 import com.mindease.domain.usecase.GenerateMoodAnalysisUseCase;
 import com.mindease.domain.usecase.GenerateSuggestionUseCase;
 import com.mindease.domain.usecase.GetRecentMoodRecordsUseCase;
+import com.mindease.domain.usecase.SendAgentMessageUseCase;
+import com.mindease.domain.usecase.StartAgentSessionUseCase;
 
 public class AppContainer {
     public final AuthRepository authRepository;
@@ -36,11 +45,15 @@ public class AppContainer {
     public final AnalysisRepository analysisRepository;
     public final SuggestionRepository suggestionRepository;
     public final CommunityRepository communityRepository;
+    public final AgentRepository agentRepository;
 
     public final CreateMoodRecordUseCase createMoodRecordUseCase;
     public final GetRecentMoodRecordsUseCase getRecentMoodRecordsUseCase;
     public final GenerateMoodAnalysisUseCase generateMoodAnalysisUseCase;
     public final GenerateSuggestionUseCase generateSuggestionUseCase;
+    public final StartAgentSessionUseCase startAgentSessionUseCase;
+    public final SendAgentMessageUseCase sendAgentMessageUseCase;
+    public final GetAgentSessionHistoryUseCase getAgentSessionHistoryUseCase;
 
     public AppContainer() {
         authRepository = new AuthRepositoryImpl();
@@ -49,19 +62,23 @@ public class AppContainer {
         analysisRepository = new AnalysisRepositoryImpl(moodRepository, new RuleBasedSentimentAnalyzer());
         suggestionRepository = new SuggestionRepositoryImpl(userRepository);
         communityRepository = new CommunityRepositoryImpl(
+                FirebaseFirestore.getInstance(),
                 userRepository,
                 new AnonymousIdentityService(),
                 new ContentModerationService(),
                 new SystemTimeProvider()
         );
+        agentRepository = null;
 
         createMoodRecordUseCase = new CreateMoodRecordUseCase(moodRepository);
         getRecentMoodRecordsUseCase = new GetRecentMoodRecordsUseCase(moodRepository);
         generateMoodAnalysisUseCase = new GenerateMoodAnalysisUseCase(analysisRepository);
         generateSuggestionUseCase = new GenerateSuggestionUseCase(suggestionRepository, new SuggestionEngine());
+        startAgentSessionUseCase = null;
+        sendAgentMessageUseCase = null;
+        getAgentSessionHistoryUseCase = null;
 
-        communityRepository.createPost("Finals week is hard. Any quick stress reset tips?", "Stress");
-        communityRepository.createPost("Could not sleep last night, trying breathing exercises.", "Sleep");
+        communityRepository.seedDemoPostsIfEmpty();
     }
 
     public AppContainer(Context context, SessionManager sessionManager) {
@@ -72,7 +89,7 @@ public class AppContainer {
                 context.getApplicationContext(),
                 MindEaseDatabase.class,
                 "mindease.db"
-        ).allowMainThreadQueries().build();
+        ).fallbackToDestructiveMigration().allowMainThreadQueries().build();
 
         moodRepository = new RoomMoodRepository(
                 database.moodRecordDao(),
@@ -83,20 +100,29 @@ public class AppContainer {
         analysisRepository = new AnalysisRepositoryImpl(moodRepository, new RuleBasedSentimentAnalyzer());
         suggestionRepository = new SuggestionRepositoryImpl(userRepository);
         communityRepository = new CommunityRepositoryImpl(
+                FirebaseFirestore.getInstance(),
                 userRepository,
                 new AnonymousIdentityService(),
                 new ContentModerationService(),
                 new SystemTimeProvider()
+        );
+        agentRepository = new AgentRepositoryImpl(
+                database.agentSessionDao(),
+                database.agentMessageDao(),
+                userRepository,
+                new PromptContextBuilder(moodRepository, analysisRepository, suggestionRepository),
+                new RiskGuardService(),
+                new TherapyAgentService()
         );
 
         createMoodRecordUseCase = new CreateMoodRecordUseCase(moodRepository);
         getRecentMoodRecordsUseCase = new GetRecentMoodRecordsUseCase(moodRepository);
         generateMoodAnalysisUseCase = new GenerateMoodAnalysisUseCase(analysisRepository);
         generateSuggestionUseCase = new GenerateSuggestionUseCase(suggestionRepository, new SuggestionEngine());
+        startAgentSessionUseCase = new StartAgentSessionUseCase(agentRepository);
+        sendAgentMessageUseCase = new SendAgentMessageUseCase(agentRepository);
+        getAgentSessionHistoryUseCase = new GetAgentSessionHistoryUseCase(agentRepository);
 
-        if (communityRepository.listPosts().isEmpty()) {
-            communityRepository.createPost("Finals week is hard. Any quick stress reset tips?", "Stress");
-            communityRepository.createPost("Could not sleep last night, trying breathing exercises.", "Sleep");
-        }
+        communityRepository.seedDemoPostsIfEmpty();
     }
 }

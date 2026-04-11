@@ -23,6 +23,7 @@ import com.google.android.material.chip.Chip;
 import com.mindease.R;
 import com.mindease.app.AppContainer;
 import com.mindease.app.MindEaseApp;
+import com.mindease.common.result.DataCallback;
 import com.mindease.domain.model.CommunityPost;
 
 import java.text.SimpleDateFormat;
@@ -117,43 +118,81 @@ public class CommunityFragment extends Fragment {
     }
 
     private void bindPosts() {
-        AppContainer container = ((MindEaseApp) requireActivity().getApplication()).getAppContainer();
-        List<CommunityPost> posts = viewModel.loadPosts(container, currentFilter);
+        AppContainer container = appContainer();
+        primaryLikeButton.setEnabled(false);
+        viewModel.loadPosts(container, currentFilter, new DataCallback<List<CommunityPost>>() {
+            @Override
+            public void onSuccess(List<CommunityPost> posts) {
+                if (!isAdded()) {
+                    return;
+                }
+                currentPosts.clear();
+                currentPosts.addAll(posts);
+                adapter.notifyDataSetChanged();
 
-        currentPosts.clear();
-        currentPosts.addAll(posts);
-        adapter.notifyDataSetChanged();
+                activeCountTextView.setText(posts.size() + " posts");
+                hotTopicTextView.setText(posts.isEmpty() ? "Waiting" : posts.get(0).emotionTag);
 
-        activeCountTextView.setText(posts.size() + " posts");
-        hotTopicTextView.setText(posts.isEmpty() ? "Waiting" : posts.get(0).emotionTag);
+                if (posts.isEmpty()) {
+                    bindEmptyState();
+                    return;
+                }
+                bindPrimaryPost(posts.get(0));
+            }
 
-        if (posts.isEmpty()) {
-            primaryTagTextView.setText("#" + currentFilter.toLowerCase(Locale.US));
-            primaryContentTextView.setText("No posts yet");
-            primaryMetaTextView.setText("Be the first to share");
-            primarySupportTextView.setText("🫶 0");
-            primaryLikeTextView.setText("❤ 0");
-            primaryCommentTextView.setText("💬 0");
-            primaryLikeButton.setText("Like");
-            primaryLikeButton.setEnabled(false);
-            return;
-        }
+            @Override
+            public void onError(String message) {
+                if (!isAdded()) {
+                    return;
+                }
+                currentPosts.clear();
+                adapter.notifyDataSetChanged();
+                bindEmptyState();
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
-        CommunityPost first = posts.get(0);
-        bindPrimaryPost(first);
+    private void bindEmptyState() {
+        primaryTagTextView.setText("#" + currentFilter.toLowerCase(Locale.US));
+        primaryContentTextView.setText("No posts yet");
+        primaryMetaTextView.setText("Be the first to share");
+        primarySupportTextView.setText("Support 0");
+        primaryLikeTextView.setText("Like 0");
+        primaryCommentTextView.setText("Comment 0");
+        primaryLikeButton.setText("Like");
+        primaryLikeButton.setEnabled(false);
     }
 
     private void bindPrimaryPost(CommunityPost post) {
-        AppContainer container = ((MindEaseApp) requireActivity().getApplication()).getAppContainer();
-        boolean hasLiked = viewModel.hasLikedPost(container, post.id);
         primaryTagTextView.setText("#" + post.emotionTag.toLowerCase(Locale.US));
         primaryContentTextView.setText(post.content);
         primaryMetaTextView.setText(post.anonymousName + "  " + dateFormat.format(post.createdAt));
-        primarySupportTextView.setText("🫶 " + post.supportCount);
-        primaryLikeTextView.setText("❤ " + post.likeCount);
-        primaryCommentTextView.setText("💬 " + post.commentCount);
-        primaryLikeButton.setText(hasLiked ? "Liked" : "Like");
-        primaryLikeButton.setEnabled(!hasLiked);
+        primarySupportTextView.setText("Support " + post.supportCount);
+        primaryLikeTextView.setText("Like " + post.likeCount);
+        primaryCommentTextView.setText("Comment " + post.commentCount);
+        primaryLikeButton.setText("Checking...");
+        primaryLikeButton.setEnabled(false);
+
+        viewModel.hasLikedPost(appContainer(), post.id, new DataCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean hasLiked) {
+                if (!isAdded()) {
+                    return;
+                }
+                primaryLikeButton.setText(Boolean.TRUE.equals(hasLiked) ? "Liked" : "Like");
+                primaryLikeButton.setEnabled(!Boolean.TRUE.equals(hasLiked));
+            }
+
+            @Override
+            public void onError(String message) {
+                if (!isAdded()) {
+                    return;
+                }
+                primaryLikeButton.setText("Like");
+                primaryLikeButton.setEnabled(true);
+            }
+        });
     }
 
     private void likePrimaryPost() {
@@ -164,15 +203,28 @@ public class CommunityFragment extends Fragment {
     }
 
     private void likePost(CommunityPost post) {
-        AppContainer container = ((MindEaseApp) requireActivity().getApplication()).getAppContainer();
-        if (!viewModel.likePost(container, post.id)) {
-            String message = viewModel.hasLikedPost(container, post.id)
-                    ? "You already liked this post"
-                    : "Failed to like post";
-            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
-            return;
-        }
-        bindPosts();
+        primaryLikeButton.setEnabled(false);
+        viewModel.likePost(appContainer(), post.id, new DataCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean liked) {
+                if (!isAdded()) {
+                    return;
+                }
+                if (!Boolean.TRUE.equals(liked)) {
+                    Toast.makeText(requireContext(), "You already liked this post", Toast.LENGTH_SHORT).show();
+                }
+                bindPosts();
+            }
+
+            @Override
+            public void onError(String message) {
+                if (!isAdded()) {
+                    return;
+                }
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+                bindPosts();
+            }
+        });
     }
 
     private void openPrimaryPostDetail() {
@@ -186,6 +238,10 @@ public class CommunityFragment extends Fragment {
         Intent intent = new Intent(requireContext(), PostDetailActivity.class);
         intent.putExtra(PostDetailActivity.EXTRA_POST_ID, post.id);
         startActivity(intent);
+    }
+
+    private AppContainer appContainer() {
+        return ((MindEaseApp) requireActivity().getApplication()).getAppContainer();
     }
 
     private final class CommunityPostAdapter extends BaseAdapter {
@@ -220,17 +276,29 @@ public class CommunityFragment extends Fragment {
             TextView commentView = view.findViewById(R.id.tv_item_post_comment);
             MaterialButton likeButton = view.findViewById(R.id.btn_item_post_like);
             MaterialButton commentButton = view.findViewById(R.id.btn_item_post_comment);
-            AppContainer container = ((MindEaseApp) requireActivity().getApplication()).getAppContainer();
-            boolean hasLiked = viewModel.hasLikedPost(container, post.id);
 
             tagView.setText("#" + post.emotionTag.toLowerCase(Locale.US));
             metaView.setText(post.anonymousName + "  " + dateFormat.format(post.createdAt));
             contentView.setText(post.content);
-            supportView.setText("🫶 " + post.supportCount);
-            likeView.setText("❤ " + post.likeCount);
-            commentView.setText("💬 " + post.commentCount);
-            likeButton.setText(hasLiked ? "Liked" : "Like");
-            likeButton.setEnabled(!hasLiked);
+            supportView.setText("Support " + post.supportCount);
+            likeView.setText("Like " + post.likeCount);
+            commentView.setText("Comment " + post.commentCount);
+            likeButton.setText("Checking...");
+            likeButton.setEnabled(false);
+
+            viewModel.hasLikedPost(appContainer(), post.id, new DataCallback<Boolean>() {
+                @Override
+                public void onSuccess(Boolean hasLiked) {
+                    likeButton.setText(Boolean.TRUE.equals(hasLiked) ? "Liked" : "Like");
+                    likeButton.setEnabled(!Boolean.TRUE.equals(hasLiked));
+                }
+
+                @Override
+                public void onError(String message) {
+                    likeButton.setText("Like");
+                    likeButton.setEnabled(true);
+                }
+            });
 
             likeButton.setOnClickListener(v -> likePost(post));
             commentButton.setOnClickListener(v -> openPostDetail(post));

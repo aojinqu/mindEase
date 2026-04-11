@@ -1,49 +1,53 @@
 package com.mindease.data.repository;
 
-import com.mindease.domain.model.CommunityPost;
+import androidx.annotation.NonNull;
+
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Transaction;
+import com.mindease.common.result.DataCallback;
 import com.mindease.domain.model.CommunityComment;
+import com.mindease.domain.model.CommunityPost;
 import com.mindease.domain.repository.CommunityRepository;
 import com.mindease.domain.repository.UserRepository;
 import com.mindease.domain.service.AnonymousIdentityService;
 import com.mindease.domain.service.ContentModerationService;
-import com.mindease.domain.service.SystemTimeProvider;
 import com.mindease.domain.service.TimeProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 public class CommunityRepositoryImpl implements CommunityRepository {
-    private final List<CommunityPost> posts = new ArrayList<>();
-    private final Map<String, List<CommunityComment>> commentsByPost = new HashMap<>();
-    private final Map<String, Set<String>> postLikesByUser = new HashMap<>();
-    private final Map<String, Set<String>> commentLikesByUser = new HashMap<>();
+    private static final String COLLECTION_POSTS = "community_posts";
+    private static final String COLLECTION_COMMENTS = "comments";
+    private static final String COLLECTION_LIKES = "likes";
+
+    private final FirebaseFirestore firestore;
     private final UserRepository userRepository;
     private final AnonymousIdentityService anonymousIdentityService;
     private final ContentModerationService moderationService;
     private final TimeProvider timeProvider;
 
-    public CommunityRepositoryImpl() {
-        this(
-                new UserRepositoryImpl(),
-                new AnonymousIdentityService(),
-                new ContentModerationService(),
-                new SystemTimeProvider()
-        );
-    }
-
     public CommunityRepositoryImpl(
+            FirebaseFirestore firestore,
             UserRepository userRepository,
             AnonymousIdentityService anonymousIdentityService,
             ContentModerationService moderationService,
             TimeProvider timeProvider
     ) {
+        this.firestore = firestore;
         this.userRepository = userRepository;
         this.anonymousIdentityService = anonymousIdentityService;
         this.moderationService = moderationService;
@@ -51,133 +55,247 @@ public class CommunityRepositoryImpl implements CommunityRepository {
     }
 
     @Override
-    public void createPost(String content, String emotionTag) {
+    public void seedDemoPostsIfEmpty() {
+        postsCollection().limit(1).get().addOnSuccessListener(snapshot -> {
+            if (snapshot != null && !snapshot.isEmpty()) {
+                return;
+            }
+            createPost("Finals week is hard. Any quick stress reset tips?", "Stress", new NoOpCallback<>());
+            createPost("Could not sleep last night, trying breathing exercises.", "Sleep", new NoOpCallback<>());
+        });
+    }
+
+    @Override
+    public void createPost(String content, String emotionTag, DataCallback<CommunityPost> callback) {
         String cleaned = moderationService.sanitize(content);
         if (cleaned.isEmpty()) {
+            callback.onError("Post content cannot be empty.");
             return;
         }
         String userId = userRepository.currentUserId();
+        String postId = UUID.randomUUID().toString();
         CommunityPost post = new CommunityPost(
-                UUID.randomUUID().toString(),
-                anonymousIdentityService.displayNameForUser(userId),
-                cleaned,
-                emotionTag,
-                timeProvider.nowMillis(),
-                0,
-                0,
-                0
-        );
-        posts.add(post);
-    }
-
-    @Override
-    public List<CommunityPost> listPosts() {
-        List<CommunityPost> copy = new ArrayList<>(posts);
-        copy.sort(Comparator.comparingLong((CommunityPost p) -> p.createdAt).reversed());
-        return Collections.unmodifiableList(copy);
-    }
-
-    @Override
-    public List<CommunityPost> listPostsByTag(String emotionTag) {
-        if (emotionTag == null || emotionTag.trim().isEmpty() || "All".equalsIgnoreCase(emotionTag)) {
-            return listPosts();
-        }
-        List<CommunityPost> filtered = new ArrayList<>();
-        for (CommunityPost post : posts) {
-            if (emotionTag.equalsIgnoreCase(post.emotionTag)) {
-                filtered.add(post);
-            }
-        }
-        filtered.sort(Comparator.comparingLong((CommunityPost p) -> p.createdAt).reversed());
-        return Collections.unmodifiableList(filtered);
-    }
-
-    @Override
-    public CommunityPost getPostById(String postId) {
-        if (postId == null) {
-            return null;
-        }
-        for (CommunityPost post : posts) {
-            if (postId.equals(post.id)) {
-                return post;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public boolean likePost(String postId) {
-        CommunityPost post = getPostById(postId);
-        if (post == null) {
-            return false;
-        }
-        String userId = userRepository.currentUserId();
-        Set<String> likedUsers = postLikesByUser.computeIfAbsent(postId, ignored -> new HashSet<>());
-        if (!likedUsers.add(userId)) {
-            return false;
-        }
-        replacePost(post, new CommunityPost(
-                post.id,
-                post.anonymousName,
-                post.content,
-                post.emotionTag,
-                post.createdAt,
-                post.supportCount,
-                post.likeCount + 1,
-                post.commentCount
-        ));
-        return true;
-    }
-
-    @Override
-    public boolean hasLikedPost(String postId) {
-        if (postId == null) {
-            return false;
-        }
-        Set<String> likedUsers = postLikesByUser.get(postId);
-        return likedUsers != null && likedUsers.contains(userRepository.currentUserId());
-    }
-
-    @Override
-    public CommunityComment addComment(String postId, String content) {
-        if (getPostById(postId) == null) {
-            return null;
-        }
-        String cleaned = moderationService.sanitize(content);
-        if (cleaned.isEmpty()) {
-            return null;
-        }
-        String userId = userRepository.currentUserId();
-        CommunityComment comment = new CommunityComment(
-                UUID.randomUUID().toString(),
                 postId,
-                null,
-                userId,
                 anonymousIdentityService.displayNameForUser(userId),
                 cleaned,
+                normalizeTag(emotionTag),
                 timeProvider.nowMillis(),
+                0,
+                0,
                 0
         );
-        commentsByPost.computeIfAbsent(postId, ignored -> new ArrayList<>()).add(comment);
-        incrementCommentCount(postId);
-        return comment;
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("id", post.id);
+        data.put("authorUserId", userId);
+        data.put("anonymousName", post.anonymousName);
+        data.put("content", post.content);
+        data.put("emotionTag", post.emotionTag);
+        data.put("createdAt", post.createdAt);
+        data.put("supportCount", post.supportCount);
+        data.put("likeCount", post.likeCount);
+        data.put("commentCount", post.commentCount);
+
+        postsCollection().document(postId).set(data)
+                .addOnSuccessListener(unused -> callback.onSuccess(post))
+                .addOnFailureListener(e -> callback.onError(readableError(e, "Failed to publish post.")));
     }
 
     @Override
-    public CommunityComment replyToComment(String postId, String parentCommentId, String content) {
-        if (getPostById(postId) == null || parentCommentId == null || parentCommentId.trim().isEmpty()) {
-            return null;
+    public void listPosts(DataCallback<List<CommunityPost>> callback) {
+        postsCollection()
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener(snapshot -> callback.onSuccess(mapPosts(snapshot)))
+                .addOnFailureListener(e -> callback.onError(readableError(e, "Failed to load posts.")));
+    }
+
+    @Override
+    public void listPostsByTag(String emotionTag, DataCallback<List<CommunityPost>> callback) {
+        if (emotionTag == null || emotionTag.trim().isEmpty() || "All".equalsIgnoreCase(emotionTag)) {
+            listPosts(callback);
+            return;
         }
-        if (findCommentById(postId, parentCommentId) == null) {
-            return null;
+        postsCollection()
+                .whereEqualTo("emotionTag", normalizeTag(emotionTag))
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener(snapshot -> callback.onSuccess(mapPosts(snapshot)))
+                .addOnFailureListener(e -> callback.onError(readableError(e, "Failed to load posts.")));
+    }
+
+    @Override
+    public void getPostById(String postId, DataCallback<CommunityPost> callback) {
+        if (postId == null || postId.trim().isEmpty()) {
+            callback.onError("Post not found.");
+            return;
         }
+        postsCollection().document(postId).get()
+                .addOnSuccessListener(document -> {
+                    CommunityPost post = mapPost(document);
+                    if (post == null) {
+                        callback.onError("Post not found.");
+                        return;
+                    }
+                    callback.onSuccess(post);
+                })
+                .addOnFailureListener(e -> callback.onError(readableError(e, "Failed to load post.")));
+    }
+
+    @Override
+    public void likePost(String postId, DataCallback<Boolean> callback) {
+        String userId = userRepository.currentUserId();
+        DocumentReference postRef = postsCollection().document(postId);
+        DocumentReference likeRef = postRef.collection(COLLECTION_LIKES).document(userId);
+
+        firestore.runTransaction((Transaction.Function<Boolean>) transaction -> {
+            DocumentSnapshot postSnapshot = transaction.get(postRef);
+            if (!postSnapshot.exists()) {
+                throw new IllegalStateException("Post not found.");
+            }
+            if (transaction.get(likeRef).exists()) {
+                return false;
+            }
+            Map<String, Object> likeData = new HashMap<>();
+            likeData.put("userId", userId);
+            likeData.put("createdAt", timeProvider.nowMillis());
+            transaction.set(likeRef, likeData);
+            transaction.update(postRef, "likeCount", FieldValue.increment(1));
+            return true;
+        }).addOnSuccessListener(callback::onSuccess)
+                .addOnFailureListener(e -> callback.onError(readableError(e, "Failed to like post.")));
+    }
+
+    @Override
+    public void hasLikedPost(String postId, DataCallback<Boolean> callback) {
+        if (postId == null || postId.trim().isEmpty()) {
+            callback.onSuccess(false);
+            return;
+        }
+        postsCollection().document(postId).collection(COLLECTION_LIKES)
+                .document(userRepository.currentUserId())
+                .get()
+                .addOnSuccessListener(document -> callback.onSuccess(document.exists()))
+                .addOnFailureListener(e -> callback.onError(readableError(e, "Failed to check post like.")));
+    }
+
+    @Override
+    public void addComment(String postId, String content, DataCallback<CommunityComment> callback) {
+        writeComment(postId, null, content, callback);
+    }
+
+    @Override
+    public void replyToComment(String postId, String parentCommentId, String content, DataCallback<CommunityComment> callback) {
+        if (parentCommentId == null || parentCommentId.trim().isEmpty()) {
+            callback.onError("Reply target is missing.");
+            return;
+        }
+        commentDocument(postId, parentCommentId).get()
+                .addOnSuccessListener(document -> {
+                    if (!document.exists()) {
+                        callback.onError("The comment you are replying to no longer exists.");
+                        return;
+                    }
+                    writeComment(postId, parentCommentId, content, callback);
+                })
+                .addOnFailureListener(e -> callback.onError(readableError(e, "Failed to publish reply.")));
+    }
+
+    @Override
+    public void listComments(String postId, DataCallback<List<CommunityComment>> callback) {
+        commentsCollection(postId)
+                .orderBy("createdAt", Query.Direction.ASCENDING)
+                .get()
+                .addOnSuccessListener(snapshot -> callback.onSuccess(orderComments(snapshot)))
+                .addOnFailureListener(e -> callback.onError(readableError(e, "Failed to load comments.")));
+    }
+
+    @Override
+    public void likeComment(String postId, String commentId, DataCallback<Boolean> callback) {
+        String userId = userRepository.currentUserId();
+        DocumentReference commentRef = commentDocument(postId, commentId);
+        DocumentReference likeRef = commentRef.collection(COLLECTION_LIKES).document(userId);
+
+        firestore.runTransaction((Transaction.Function<Boolean>) transaction -> {
+            DocumentSnapshot commentSnapshot = transaction.get(commentRef);
+            if (!commentSnapshot.exists()) {
+                throw new IllegalStateException("Comment not found.");
+            }
+            if (transaction.get(likeRef).exists()) {
+                return false;
+            }
+            Map<String, Object> likeData = new HashMap<>();
+            likeData.put("userId", userId);
+            likeData.put("createdAt", timeProvider.nowMillis());
+            transaction.set(likeRef, likeData);
+            transaction.update(commentRef, "likeCount", FieldValue.increment(1));
+            return true;
+        }).addOnSuccessListener(callback::onSuccess)
+                .addOnFailureListener(e -> callback.onError(readableError(e, "Failed to like comment.")));
+    }
+
+    @Override
+    public void hasLikedComment(String postId, String commentId, DataCallback<Boolean> callback) {
+        if (postId == null || commentId == null || postId.trim().isEmpty() || commentId.trim().isEmpty()) {
+            callback.onSuccess(false);
+            return;
+        }
+        commentDocument(postId, commentId).collection(COLLECTION_LIKES)
+                .document(userRepository.currentUserId())
+                .get()
+                .addOnSuccessListener(document -> callback.onSuccess(document.exists()))
+                .addOnFailureListener(e -> callback.onError(readableError(e, "Failed to check comment like.")));
+    }
+
+    @Override
+    public void deleteComment(String postId, String commentId, DataCallback<Boolean> callback) {
+        DocumentReference commentRef = commentDocument(postId, commentId);
+        commentsCollection(postId).whereEqualTo("parentCommentId", commentId).limit(1).get()
+                .addOnSuccessListener(children -> {
+                    if (!children.isEmpty()) {
+                        callback.onError("Comments with replies cannot be deleted.");
+                        return;
+                    }
+                    commentRef.get().addOnSuccessListener(document -> {
+                        CommunityComment comment = mapComment(document);
+                        if (comment == null) {
+                            callback.onError("Comment not found.");
+                            return;
+                        }
+                        if (!userRepository.currentUserId().equals(comment.authorUserId)) {
+                            callback.onError("Only the author can delete this comment.");
+                            return;
+                        }
+                        firestore.runTransaction((Transaction.Function<Boolean>) transaction -> {
+                            DocumentSnapshot commentSnapshot = transaction.get(commentRef);
+                            if (!commentSnapshot.exists()) {
+                                throw new IllegalStateException("Comment not found.");
+                            }
+                            transaction.delete(commentRef);
+                            transaction.update(postsCollection().document(postId), "commentCount", FieldValue.increment(-1));
+                            return true;
+                        }).addOnSuccessListener(callback::onSuccess)
+                                .addOnFailureListener(e -> callback.onError(readableError(e, "Failed to delete comment.")));
+                    }).addOnFailureListener(e -> callback.onError(readableError(e, "Failed to delete comment.")));
+                })
+                .addOnFailureListener(e -> callback.onError(readableError(e, "Failed to delete comment.")));
+    }
+
+    private void writeComment(
+            String postId,
+            String parentCommentId,
+            String content,
+            DataCallback<CommunityComment> callback
+    ) {
         String cleaned = moderationService.sanitize(content);
         if (cleaned.isEmpty()) {
-            return null;
+            callback.onError("Comment content cannot be empty.");
+            return;
         }
         String userId = userRepository.currentUserId();
-        CommunityComment reply = new CommunityComment(
-                UUID.randomUUID().toString(),
+        String commentId = UUID.randomUUID().toString();
+        CommunityComment comment = new CommunityComment(
+                commentId,
                 postId,
                 parentCommentId,
                 userId,
@@ -186,183 +304,167 @@ public class CommunityRepositoryImpl implements CommunityRepository {
                 timeProvider.nowMillis(),
                 0
         );
-        commentsByPost.computeIfAbsent(postId, ignored -> new ArrayList<>()).add(reply);
-        incrementCommentCount(postId);
-        return reply;
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("id", comment.id);
+        data.put("postId", comment.postId);
+        data.put("parentCommentId", comment.parentCommentId);
+        data.put("authorUserId", comment.authorUserId);
+        data.put("anonymousName", comment.anonymousName);
+        data.put("content", comment.content);
+        data.put("createdAt", comment.createdAt);
+        data.put("likeCount", comment.likeCount);
+
+        DocumentReference postRef = postsCollection().document(postId);
+        DocumentReference commentRef = commentsCollection(postId).document(commentId);
+        firestore.runTransaction((Transaction.Function<CommunityComment>) transaction -> {
+            DocumentSnapshot postSnapshot = transaction.get(postRef);
+            if (!postSnapshot.exists()) {
+                throw new IllegalStateException("Post not found.");
+            }
+            transaction.set(commentRef, data);
+            transaction.update(postRef, "commentCount", FieldValue.increment(1));
+            return comment;
+        }).addOnSuccessListener(callback::onSuccess)
+                .addOnFailureListener(e -> callback.onError(readableError(e, "Failed to publish comment.")));
     }
 
-    @Override
-    public List<CommunityComment> listComments(String postId) {
-        List<CommunityComment> raw = commentsByPost.getOrDefault(postId, Collections.emptyList());
-        if (raw.isEmpty()) {
+    private List<CommunityPost> mapPosts(QuerySnapshot snapshot) {
+        if (snapshot == null || snapshot.isEmpty()) {
             return Collections.emptyList();
         }
+        List<CommunityPost> posts = new ArrayList<>();
+        for (QueryDocumentSnapshot document : snapshot) {
+            CommunityPost post = mapPost(document);
+            if (post != null) {
+                posts.add(post);
+            }
+        }
+        return posts;
+    }
 
+    private List<CommunityComment> orderComments(QuerySnapshot snapshot) {
+        if (snapshot == null || snapshot.isEmpty()) {
+            return Collections.emptyList();
+        }
         List<CommunityComment> parents = new ArrayList<>();
         Map<String, List<CommunityComment>> children = new HashMap<>();
-        for (CommunityComment comment : raw) {
-            if (!comment.isReply()) {
-                parents.add(comment);
-            } else {
-                children.computeIfAbsent(comment.parentCommentId, ignored -> new ArrayList<>()).add(comment);
-            }
-        }
-
-        parents.sort(Comparator.comparingLong(c -> c.createdAt));
-        for (List<CommunityComment> list : children.values()) {
-            list.sort(Comparator.comparingLong(c -> c.createdAt));
-        }
-
-        List<CommunityComment> ordered = new ArrayList<>();
-        for (CommunityComment parent : parents) {
-            appendCommentThread(parent, children, ordered);
-        }
-        return Collections.unmodifiableList(ordered);
-    }
-
-    @Override
-    public boolean likeComment(String postId, String commentId) {
-        List<CommunityComment> comments = commentsByPost.get(postId);
-        if (comments == null || comments.isEmpty()) {
-            return false;
-        }
-        String likeKey = buildCommentLikeKey(postId, commentId);
-        Set<String> likedUsers = commentLikesByUser.computeIfAbsent(likeKey, ignored -> new HashSet<>());
-        if (!likedUsers.add(userRepository.currentUserId())) {
-            return false;
-        }
-        for (int i = 0; i < comments.size(); i++) {
-            CommunityComment comment = comments.get(i);
-            if (!comment.id.equals(commentId)) {
+        for (QueryDocumentSnapshot document : snapshot) {
+            CommunityComment comment = mapComment(document);
+            if (comment == null) {
                 continue;
             }
-            CommunityComment updated = new CommunityComment(
-                    comment.id,
-                    comment.postId,
-                    comment.parentCommentId,
-                    comment.authorUserId,
-                    comment.anonymousName,
-                    comment.content,
-                    comment.createdAt,
-                    comment.likeCount + 1
-            );
-            comments.set(i, updated);
-            return true;
+            if (!comment.isReply()) {
+                parents.add(comment);
+                continue;
+            }
+            children.computeIfAbsent(comment.parentCommentId, ignored -> new ArrayList<>()).add(comment);
         }
-        return false;
+        parents.sort(Comparator.comparingLong(comment -> comment.createdAt));
+        for (List<CommunityComment> replies : children.values()) {
+            replies.sort(Comparator.comparingLong(comment -> comment.createdAt));
+        }
+        List<CommunityComment> ordered = new ArrayList<>();
+        for (CommunityComment parent : parents) {
+            appendThread(parent, children, ordered);
+        }
+        return ordered;
     }
 
-    @Override
-    public boolean hasLikedComment(String postId, String commentId) {
-        if (postId == null || commentId == null) {
-            return false;
-        }
-        Set<String> likedUsers = commentLikesByUser.get(buildCommentLikeKey(postId, commentId));
-        return likedUsers != null && likedUsers.contains(userRepository.currentUserId());
-    }
-
-    @Override
-    public boolean deleteComment(String postId, String commentId) {
-        List<CommunityComment> comments = commentsByPost.get(postId);
-        if (comments == null || comments.isEmpty()) {
-            return false;
-        }
-        CommunityComment target = findCommentById(postId, commentId);
-        if (target == null) {
-            return false;
-        }
-        if (!userRepository.currentUserId().equals(target.authorUserId)) {
-            return false;
-        }
-        if (hasChildComments(postId, commentId)) {
-            return false;
-        }
-
-        boolean removed = comments.removeIf(comment -> comment.id.equals(commentId));
-        if (!removed) {
-            return false;
-        }
-        decrementCommentCount(postId);
-        return true;
-    }
-
-    private void appendCommentThread(
+    private void appendThread(
             CommunityComment root,
             Map<String, List<CommunityComment>> children,
-            List<CommunityComment> target
+            List<CommunityComment> ordered
     ) {
-        target.add(root);
+        ordered.add(root);
         List<CommunityComment> replies = children.get(root.id);
-        if (replies == null || replies.isEmpty()) {
+        if (replies == null) {
             return;
         }
         for (CommunityComment reply : replies) {
-            appendCommentThread(reply, children, target);
+            appendThread(reply, children, ordered);
         }
     }
 
-    private CommunityComment findCommentById(String postId, String commentId) {
-        List<CommunityComment> comments = commentsByPost.getOrDefault(postId, Collections.emptyList());
-        for (CommunityComment comment : comments) {
-            if (comment.id.equals(commentId)) {
-                return comment;
-            }
+    private CommunityPost mapPost(DocumentSnapshot document) {
+        if (document == null || !document.exists()) {
+            return null;
         }
-        return null;
+        return new CommunityPost(
+                readString(document, "id", document.getId()),
+                readString(document, "anonymousName", "Anonymous"),
+                readString(document, "content", ""),
+                readString(document, "emotionTag", "Stress"),
+                readLong(document, "createdAt"),
+                readInt(document, "supportCount"),
+                readInt(document, "likeCount"),
+                readInt(document, "commentCount")
+        );
     }
 
-    private boolean hasChildComments(String postId, String commentId) {
-        List<CommunityComment> comments = commentsByPost.getOrDefault(postId, Collections.emptyList());
-        for (CommunityComment comment : comments) {
-            if (commentId.equals(comment.parentCommentId)) {
-                return true;
-            }
+    private CommunityComment mapComment(DocumentSnapshot document) {
+        if (document == null || !document.exists()) {
+            return null;
         }
-        return false;
+        return new CommunityComment(
+                readString(document, "id", document.getId()),
+                readString(document, "postId", ""),
+                document.getString("parentCommentId"),
+                readString(document, "authorUserId", "guest"),
+                readString(document, "anonymousName", "Anonymous"),
+                readString(document, "content", ""),
+                readLong(document, "createdAt"),
+                readInt(document, "likeCount")
+        );
     }
 
-    private void incrementCommentCount(String postId) {
-        CommunityPost post = getPostById(postId);
-        if (post == null) {
-            return;
-        }
-        replacePost(post, new CommunityPost(
-                post.id,
-                post.anonymousName,
-                post.content,
-                post.emotionTag,
-                post.createdAt,
-                post.supportCount,
-                post.likeCount,
-                post.commentCount + 1
-        ));
+    private String readString(DocumentSnapshot document, String field, String fallback) {
+        String value = document.getString(field);
+        return value == null || value.trim().isEmpty() ? fallback : value;
     }
 
-    private void decrementCommentCount(String postId) {
-        CommunityPost post = getPostById(postId);
-        if (post == null || post.commentCount <= 0) {
-            return;
-        }
-        replacePost(post, new CommunityPost(
-                post.id,
-                post.anonymousName,
-                post.content,
-                post.emotionTag,
-                post.createdAt,
-                post.supportCount,
-                post.likeCount,
-                post.commentCount - 1
-        ));
+    private long readLong(DocumentSnapshot document, String field) {
+        Long value = document.getLong(field);
+        return value == null ? 0L : value;
     }
 
-    private void replacePost(CommunityPost source, CommunityPost updated) {
-        int index = posts.indexOf(source);
-        if (index >= 0) {
-            posts.set(index, updated);
-        }
+    private int readInt(DocumentSnapshot document, String field) {
+        Long value = document.getLong(field);
+        return value == null ? 0 : value.intValue();
     }
 
-    private String buildCommentLikeKey(String postId, String commentId) {
-        return postId + ":" + commentId;
+    private String normalizeTag(String emotionTag) {
+        if (emotionTag == null || emotionTag.trim().isEmpty()) {
+            return "Stress";
+        }
+        String trimmed = emotionTag.trim();
+        return trimmed.substring(0, 1).toUpperCase(Locale.US) + trimmed.substring(1);
+    }
+
+    private CollectionReference postsCollection() {
+        return firestore.collection(COLLECTION_POSTS);
+    }
+
+    private CollectionReference commentsCollection(String postId) {
+        return postsCollection().document(postId).collection(COLLECTION_COMMENTS);
+    }
+
+    private DocumentReference commentDocument(String postId, String commentId) {
+        return commentsCollection(postId).document(commentId);
+    }
+
+    private String readableError(@NonNull Exception exception, String fallback) {
+        String message = exception.getMessage();
+        return message == null || message.trim().isEmpty() ? fallback : message;
+    }
+
+    private static final class NoOpCallback<T> implements DataCallback<T> {
+        @Override
+        public void onSuccess(T data) {
+        }
+
+        @Override
+        public void onError(String message) {
+        }
     }
 }

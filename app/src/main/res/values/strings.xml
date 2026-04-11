@@ -6,4 +6,21 @@
     <string name="nav_community">Community</string>
     <string name="nav_profile">Profile</string>
     <string name="msg_mood_saved">Mood record saved</string>
+    <string name="agent_title">MindEase Companion</string>
+    <string name="agent_avatar_glyph">ME</string>
+    <string name="agent_header_eyebrow">Context-aware support</string>
+    <string name="agent_context_placeholder">Recent mood context will appear here after the first reply.</string>
+    <string name="agent_empty_hint">Share what feels most present right now. MindEase will combine your recent mood record, trend, and latest suggestion before replying.</string>
+    <string name="agent_input_hint">What feels heavy, loud, or hard to untangle right now?</string>
+    <string name="agent_send">Send</string>
+    <string name="agent_quick_cta_grounding">Need grounding</string>
+    <string name="agent_quick_cta_stress">Exam stress</string>
+    <string name="agent_quick_cta_sleep">Can\'t sleep</string>
+    <string name="agent_quick_prompt_grounding">I feel overwhelmed. Can you help me ground myself in the next minute?</string>
+    <string name="agent_quick_prompt_stress">I\'ve been stressed about study pressure for days. Can we sort out one next step?</string>
+    <string name="agent_quick_prompt_sleep">My mind won\'t slow down tonight. Can you help me settle before sleep?</string>
+    <string name="agent_entry_label">New support space</string>
+    <string name="agent_entry_title">Talk with your MindEase companion</string>
+    <string name="agent_entry_body">A calm conversation space that blends your recent mood records, trends, and suggestions into each reply.</string>
+    <string name="agent_open_cta">Open chat</string>
 </resources>
