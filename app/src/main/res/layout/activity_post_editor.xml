@@ -1,21 +1,27 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Share only what feels safe"
+            android:textAppearance="@style/TextAppearance.MindEase.Label" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Create Anonymous Post"
-            android:textSize="22sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/TextAppearance.MindEase.Display" />
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/chip_group_post_tag"
@@ -26,6 +32,7 @@
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_post_stress"
+                style="@style/Widget.MindEase.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
@@ -33,18 +40,21 @@
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_post_anxious"
+                style="@style/Widget.MindEase.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Anxious" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_post_sleep"
+                style="@style/Widget.MindEase.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Sleep" />
         </com.google.android.material.chip.ChipGroup>
 
         <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MindEase.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp">
@@ -61,11 +71,11 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_publish_post"
+            style="@style/Widget.MindEase.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Publish"
-            app:cornerRadius="12dp" />
+            android:text="Publish" />
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

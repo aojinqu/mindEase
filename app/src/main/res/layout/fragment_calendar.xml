@@ -1,59 +1,33 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Look back without overwhelm"
+            android:textAppearance="@style/TextAppearance.MindEase.Label" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Mood Calendar"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/TextAppearance.MindEase.Display" />
 
         <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.MindEase.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            app:cardCornerRadius="16dp"
-            app:strokeColor="#E8E8E8"
-            app:strokeWidth="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="12dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Tap a date to view details"
-                    android:textColor="#666666" />
-
-                <ListView
-                    android:id="@+id/lv_calendar_dates"
-                    android:layout_width="match_parent"
-                    android:layout_height="220dp"
-                    android:layout_marginTop="8dp"
-                    android:dividerHeight="8dp" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="16dp"
-            app:strokeColor="#E8E8E8"
-            app:strokeWidth="1dp">
+            android:layout_marginTop="12dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -62,10 +36,39 @@
                 android:padding="16dp">
 
                 <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tap a date to view details"
+                    android:textAppearance="@style/TextAppearance.MindEase.Supporting" />
+
+                <ListView
+                    android:id="@+id/lv_calendar_dates"
+                    android:layout_width="match_parent"
+                    android:layout_height="220dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@android:color/transparent"
+                    android:dividerHeight="8dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.MindEase.Card.Warm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Selected Day"
-                    android:textStyle="bold" />
+                    android:textAppearance="@style/TextAppearance.MindEase.Title" />
 
                 <TextView
                     android:id="@+id/tv_calendar_selected"
@@ -73,14 +76,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:text="Select a date from the list above"
-                    android:textColor="#666666" />
+                    android:textAppearance="@style/TextAppearance.MindEase.Supporting" />
 
                 <TextView
                     android:id="@+id/tv_calendar_recent_list"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:textColor="#666666" />
+                    android:textAppearance="@style/TextAppearance.MindEase.Body" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

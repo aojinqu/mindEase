@@ -1,143 +1,248 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="20dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Mood Analysis"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:text="INSIGHTS"
+            android:textAppearance="@style/TextAppearance.MindEase.Label" />
 
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/chip_group_period"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            app:singleSelection="true">
+            android:layout_marginTop="6dp"
+            android:text="Mood Analysis"
+            android:textAppearance="@style/TextAppearance.MindEase.Display" />
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chip_period_7"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="Last 7 days" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chip_period_30"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Last 30 days" />
-        </com.google.android.material.chip.ChipGroup>
-
-        <com.google.android.material.card.MaterialCardView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            app:cardCornerRadius="16dp"
-            app:strokeColor="#E8E8E8"
-            app:strokeWidth="1dp">
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_wellness_highlight"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📊"
+                    android:textSize="30sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="Trend"
+                    android:textAppearance="@style/TextAppearance.MindEase.Headline" />
+            </LinearLayout>
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chip_group_period"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_period_7"
+                    style="@style/Widget.MindEase.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="7d" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_period_30"
+                    style="@style/Widget.MindEase.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="30d" />
+            </com.google.android.material.chip.ChipGroup>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.MindEase.Card"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🙂"
+                        android:textSize="24sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Steady"
+                        android:textAppearance="@style/TextAppearance.MindEase.Title" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="wrap_content" />
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.MindEase.Card.Warm"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🌙"
+                        android:textSize="24sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Sleep"
+                        android:textAppearance="@style/TextAppearance.MindEase.Title" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.MindEase.Card.Highlight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="18dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Trend Overview"
-                    android:textStyle="bold" />
+                    android:text="📈 Trend"
+                    android:textAppearance="@style/TextAppearance.MindEase.Title" />
 
                 <TextView
                     android:id="@+id/tv_analysis_counts"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Positive 2 · Neutral 3 · Negative 2"
-                    android:textColor="#666666" />
+                    android:text="2  |  3  |  2"
+                    android:textAppearance="@style/TextAppearance.MindEase.Supporting" />
 
                 <com.github.mikephil.charting.charts.LineChart
                     android:id="@+id/chart_mood_trend"
                     android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:layout_marginTop="12dp"
-                    android:background="#EEF4FF" />
+                    android:layout_height="180dp"
+                    android:layout_marginTop="14dp"
+                    android:background="?attr/colorSurface" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.MindEase.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            app:cardCornerRadius="16dp"
-            app:strokeColor="#E8E8E8"
-            app:strokeWidth="1dp">
+            android:layout_marginTop="14dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="18dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Sentiment Distribution"
-                    android:textStyle="bold" />
+                    android:text="📊 Distribution"
+                    android:textAppearance="@style/TextAppearance.MindEase.Title" />
 
                 <com.github.mikephil.charting.charts.BarChart
                     android:id="@+id/chart_sentiment_distribution"
                     android:layout_width="match_parent"
-                    android:layout_height="140dp"
-                    android:layout_marginTop="12dp" />
+                    android:layout_height="190dp"
+                    android:layout_marginTop="14dp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.MindEase.Card.Warm"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="16dp"
-            app:strokeColor="#E8E8E8"
-            app:strokeWidth="1dp">
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="16dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="18dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Trigger Factors"
-                    android:textStyle="bold" />
+                    android:text="🏷"
+                    android:textSize="24sp" />
 
-                <TextView
-                    android:id="@+id/tv_analysis_tags"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="exam (4), sleep (3), friendship (2)"
-                    android:textColor="#666666" />
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/tv_analysis_summary"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:textColor="#666666" />
+                    <TextView
+                        android:id="@+id/tv_analysis_tags"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="exam   sleep   friendship"
+                        android:textAppearance="@style/TextAppearance.MindEase.Supporting" />
+
+                    <TextView
+                        android:id="@+id/tv_analysis_summary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textAppearance="@style/TextAppearance.MindEase.Body" />
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

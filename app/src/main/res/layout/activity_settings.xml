@@ -1,8 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/transparent"
     android:fillViewport="true">
 
     <LinearLayout
@@ -15,37 +15,49 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Settings"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/TextAppearance.MindEase.Display" />
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/switch_privacy_mode"
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.MindEase.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Privacy mode (hide sensitive details)" />
+            android:layout_marginTop="16dp">
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/switch_daily_reminder"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Daily reminder" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switch_privacy_mode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Privacy mode (hide sensitive details)" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switch_daily_reminder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Daily reminder" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="MindEase is a non-medical emotional support tool."
-            android:textColor="#666666" />
+            android:textAppearance="@style/TextAppearance.MindEase.Supporting" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_logout"
+            style="@style/Widget.MindEase.Button.Secondary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Logout"
-            app:cornerRadius="12dp" />
+            android:text="Logout" />
     </LinearLayout>
 
 </ScrollView>

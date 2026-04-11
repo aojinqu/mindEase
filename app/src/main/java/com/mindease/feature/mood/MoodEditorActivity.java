@@ -3,6 +3,7 @@ package com.mindease.feature.mood;
 import android.text.TextUtils;
 import android.os.Bundle;
 import android.view.ViewGroup;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -281,8 +282,15 @@ public class MoodEditorActivity extends AppCompatActivity {
             return;
         }
         Chip chip = new Chip(this);
+        chip.setId(View.generateViewId());
         chip.setText(moodText);
         chip.setCheckable(true);
+        chip.setClickable(true);
+        chip.setFocusable(true);
+        chip.setChipBackgroundColorResource(R.color.chip_filter_background);
+        chip.setChipStrokeColorResource(R.color.chip_filter_stroke);
+        chip.setTextColor(getResources().getColorStateList(R.color.chip_filter_text, getTheme()));
+        chip.setChipStrokeWidth(getResources().getDisplayMetrics().density);
         chip.setLayoutParams(new ChipGroup.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT

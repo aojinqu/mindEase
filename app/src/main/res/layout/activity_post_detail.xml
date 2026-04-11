@@ -1,8 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,39 +15,34 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="#stress"
-            android:textColor="#4A6FA5"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/TextAppearance.MindEase.Label" />
 
         <TextView
             android:id="@+id/tv_detail_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:textColor="#333333"
-            android:textSize="16sp" />
+            android:textAppearance="@style/TextAppearance.MindEase.Body" />
 
         <TextView
             android:id="@+id/tv_detail_meta"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:textColor="#777777" />
+            android:textAppearance="@style/TextAppearance.MindEase.Supporting" />
 
         <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.MindEase.Card.Warm"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            app:cardCornerRadius="12dp"
-            app:strokeColor="#E8E8E8"
-            app:strokeWidth="1dp">
+            android:layout_marginTop="12dp">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="14dp"
                 android:text="Comments are planned for the next iteration."
-                android:textColor="#666666" />
+                android:textAppearance="@style/TextAppearance.MindEase.Supporting" />
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 
