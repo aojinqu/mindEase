@@ -14,68 +14,104 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Share only what feels safe"
+            android:text="POST"
             android:textAppearance="@style/TextAppearance.MindEase.Label" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
             android:text="Create Anonymous Post"
             android:textAppearance="@style/TextAppearance.MindEase.Display" />
 
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/chip_group_post_tag"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            app:singleSelection="true">
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_wellness_highlight"
+            android:orientation="vertical"
+            android:padding="18dp">
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chip_post_stress"
-                style="@style/Widget.MindEase.Chip.Filter"
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="Stress" />
+                android:text="Pick a feeling and share a short moment"
+                android:textAppearance="@style/TextAppearance.MindEase.Headline" />
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chip_post_anxious"
-                style="@style/Widget.MindEase.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Anxious" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chip_post_sleep"
-                style="@style/Widget.MindEase.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Sleep" />
-        </com.google.android.material.chip.ChipGroup>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MindEase.TextInputLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_post_content"
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chip_group_post_tag"
                 android:layout_width="match_parent"
-                android:layout_height="160dp"
-                android:gravity="top|start"
-                android:hint="Share your feeling anonymously..."
-                android:inputType="textMultiLine"
-                android:minLines="4" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_post_stress"
+                    style="@style/Widget.MindEase.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="Stress" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_post_anxious"
+                    style="@style/Widget.MindEase.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Anxious" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_post_sleep"
+                    style="@style/Widget.MindEase.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sleep" />
+            </com.google.android.material.chip.ChipGroup>
+        </LinearLayout>
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.MindEase.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Your words"
+                    android:textAppearance="@style/TextAppearance.MindEase.Title" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MindEase.TextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_post_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="180dp"
+                        android:gravity="top|start"
+                        android:hint="Share your feeling anonymously..."
+                        android:inputType="textMultiLine"
+                        android:minLines="5" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_publish_post"
             style="@style/Widget.MindEase.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="Publish" />
+            android:layout_marginTop="16dp"
+            android:text="Publish Post" />
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

@@ -8,6 +8,7 @@ public class CommunityPost {
     public final long createdAt;
     public final int supportCount;
     public final int likeCount;
+    public final int commentCount;
 
     public CommunityPost(
             String id,
@@ -16,7 +17,8 @@ public class CommunityPost {
             String emotionTag,
             long createdAt,
             int supportCount,
-            int likeCount
+            int likeCount,
+            int commentCount
     ) {
         this.id = id;
         this.anonymousName = anonymousName;
@@ -25,5 +27,6 @@ public class CommunityPost {
         this.createdAt = createdAt;
         this.supportCount = supportCount;
         this.likeCount = likeCount;
+        this.commentCount = commentCount;
     }
 }

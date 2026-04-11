@@ -14,20 +14,102 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Shared support, gently moderated"
+            android:text="COMMUNITY"
             android:textAppearance="@style/TextAppearance.MindEase.Label" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
             android:text="Anonymous Community"
             android:textAppearance="@style/TextAppearance.MindEase.Display" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.MindEase.Card.Highlight"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🔥"
+                        android:textSize="22sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Hot Topic"
+                        android:textAppearance="@style/TextAppearance.MindEase.Label" />
+
+                    <TextView
+                        android:id="@+id/tv_community_hot_topic"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Exam"
+                        android:textAppearance="@style/TextAppearance.MindEase.Title" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="wrap_content" />
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.MindEase.Card.Warm"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="💬"
+                        android:textSize="22sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Active"
+                        android:textAppearance="@style/TextAppearance.MindEase.Label" />
+
+                    <TextView
+                        android:id="@+id/tv_community_active_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="12 posts"
+                        android:textAppearance="@style/TextAppearance.MindEase.Title" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/chip_group_community_filter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="14dp"
             app:singleLine="true"
             app:singleSelection="true">
 
@@ -65,36 +147,20 @@
                 android:text="Sleep" />
         </com.google.android.material.chip.ChipGroup>
 
-        <LinearLayout
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_create_post"
+            style="@style/Widget.MindEase.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:orientation="horizontal">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_create_post"
-                style="@style/Widget.MindEase.Button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Create Post" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_open_detail"
-                style="@style/Widget.MindEase.Button.Secondary"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:text="Open Detail" />
-        </LinearLayout>
+            android:text="Share Anonymously" />
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_community_primary"
             style="@style/Widget.MindEase.Card.Highlight"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp">
+            android:layout_marginTop="16dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -102,39 +168,115 @@
                 android:orientation="vertical"
                 android:padding="18dp">
 
-                <TextView
-                    android:id="@+id/tv_community_primary_tag"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="#exam #anxious"
-                    android:textAppearance="@style/TextAppearance.MindEase.Label" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tv_community_primary_tag"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="#exam"
+                        android:textAppearance="@style/TextAppearance.MindEase.Label" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:id="@+id/tv_community_primary_meta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Anon  12:30"
+                        android:textAppearance="@style/TextAppearance.MindEase.Supporting" />
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/tv_community_primary_content"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="10dp"
                     android:text="I feel pressure before finals, anyone has simple ways to calm down?"
                     android:textAppearance="@style/TextAppearance.MindEase.Body" />
 
-                <TextView
-                    android:id="@+id/tv_community_primary_meta"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="support 24 · like 17"
-                    android:textAppearance="@style/TextAppearance.MindEase.Supporting" />
+                    android:layout_marginTop="14dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tv_community_primary_support"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🫶 24"
+                        android:textAppearance="@style/TextAppearance.MindEase.Supporting" />
+
+                    <TextView
+                        android:id="@+id/tv_community_primary_like"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="14dp"
+                        android:text="❤ 17"
+                        android:textAppearance="@style/TextAppearance.MindEase.Supporting" />
+
+                    <TextView
+                        android:id="@+id/tv_community_primary_comment"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="14dp"
+                        android:text="💬 5"
+                        android:textAppearance="@style/TextAppearance.MindEase.Supporting" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_primary_like"
+                        style="@style/Widget.MindEase.Button.Secondary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="❤ Like" />
+
+                    <Space
+                        android:layout_width="10dp"
+                        android:layout_height="wrap_content" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_primary_comment"
+                        style="@style/Widget.MindEase.Button.Secondary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="💬 Comment" />
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="Recent voices"
+            android:textAppearance="@style/TextAppearance.MindEase.Title" />
 
         <ListView
             android:id="@+id/lv_community_posts"
             android:layout_width="match_parent"
-            android:layout_height="220dp"
+            android:layout_height="320dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="16dp"
             android:background="@android:color/transparent"
-            android:dividerHeight="8dp" />
+            android:divider="@android:color/transparent"
+            android:dividerHeight="10dp" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
