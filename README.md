@@ -75,33 +75,73 @@ MindEase currently includes:
 ## Screenshots
 
 ### Splash / Onboarding
-![Splash screen](docs/screenshots/splash.png)
+<table>
+  <tr>
+    <td><img src="docs/screenshots/splash.png" alt="Splash screen" width="240" /></td>
+    <td></td>
+  </tr>
+</table>
+
 Brief note about first-launch experience.
 
 ### Mood Editor
-![Mood editor](docs/screenshots/mood-editor.png)
-![Mood editor](docs/screenshots/mood-editor2.png)
+<table>
+  <tr>
+    <td><img src="docs/screenshots/mood-editor.png" alt="Mood editor" width="240" /></td>
+    <td><img src="docs/screenshots/mood-editor2.png" alt="Mood editor second view" width="240" /></td>
+  </tr>
+</table>
+
 Brief note about mood recording flow.
 
 ### Analysis
-![Analysis page](docs/screenshots/analysis.png)
-![Analysis page](docs/screenshots/analysis2.png)
+<table>
+  <tr>
+    <td><img src="docs/screenshots/analysis.png" alt="Analysis page" width="240" /></td>
+    <td><img src="docs/screenshots/analysis2.png" alt="Analysis page second view" width="240" /></td>
+  </tr>
+</table>
+
 Brief note about weekly/monthly charts.
 
 ### Agent Chat
-![Agent chat](docs/screenshots/agent-chat.png)
+<table>
+  <tr>
+    <td><img src="docs/screenshots/agent-chat.png" alt="Agent chat" width="240" /></td>
+    <td></td>
+  </tr>
+</table>
+
 Brief note about contextual emotional support.
 
 ### Community Feed
-![Community feed](docs/screenshots/community-feed.png)
+<table>
+  <tr>
+    <td><img src="docs/screenshots/community-feed.png" alt="Community feed" width="240" /></td>
+    <td></td>
+  </tr>
+</table>
+
 Brief note about anonymous posting and browsing.
 
 ### Community Detail
-![Post detail](docs/screenshots/post-detail.png)
+<table>
+  <tr>
+    <td><img src="docs/screenshots/post-detail.png" alt="Post detail" width="240" /></td>
+    <td></td>
+  </tr>
+</table>
+
 Brief note about comments, replies, and delete-your-own actions.
 
 ### Profile / Settings
-![Profile page](docs/screenshots/profile.png)
+<table>
+  <tr>
+    <td><img src="docs/screenshots/profile.png" alt="Profile page" width="240" /></td>
+    <td></td>
+  </tr>
+</table>
+
 Brief note about anonymous name and privacy settings.
 
 
