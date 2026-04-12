@@ -2,6 +2,7 @@ package com.mindease.domain.model;
 
 public class CommunityPost {
     public final String id;
+    public final String authorUserId;
     public final String anonymousName;
     public final String content;
     public final String emotionTag;
@@ -12,6 +13,7 @@ public class CommunityPost {
 
     public CommunityPost(
             String id,
+            String authorUserId,
             String anonymousName,
             String content,
             String emotionTag,
@@ -21,6 +23,7 @@ public class CommunityPost {
             int commentCount
     ) {
         this.id = id;
+        this.authorUserId = authorUserId;
         this.anonymousName = anonymousName;
         this.content = content;
         this.emotionTag = emotionTag;

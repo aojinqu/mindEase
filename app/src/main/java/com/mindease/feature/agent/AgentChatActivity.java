@@ -18,13 +18,12 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.mindease.R;
 import com.mindease.app.AppContainer;
 import com.mindease.app.MindEaseApp;
+import com.mindease.common.ui.WindowInsetsHelper;
 
 public class AgentChatActivity extends AppCompatActivity {
     private AgentChatViewModel viewModel;
     private AgentMessageAdapter adapter;
     private RecyclerView recyclerView;
-    private TextView contextSummaryView;
-    private TextView emptyHintView;
     private TextView errorView;
     private ProgressBar progressBar;
     private TextInputEditText inputEditText;
@@ -33,19 +32,22 @@ public class AgentChatActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        WindowInsetsHelper.enableEdgeToEdge(this);
         setContentView(R.layout.activity_agent_chat);
 
         viewModel = new ViewModelProvider(this).get(AgentChatViewModel.class);
         adapter = new AgentMessageAdapter();
 
         MaterialToolbar toolbar = findViewById(R.id.toolbar_agent_chat);
+        View inputCard = findViewById(R.id.card_agent_input);
         recyclerView = findViewById(R.id.rv_agent_messages);
-        contextSummaryView = findViewById(R.id.tv_agent_context_summary);
-        emptyHintView = findViewById(R.id.tv_agent_empty_hint);
         errorView = findViewById(R.id.tv_agent_error);
         progressBar = findViewById(R.id.progress_agent_loading);
         inputEditText = findViewById(R.id.et_agent_input);
         sendButton = findViewById(R.id.btn_agent_send);
+
+        WindowInsetsHelper.applyTopPadding(toolbar);
+        WindowInsetsHelper.applyImeAwareBottomMargin(inputCard);
 
         toolbar.setNavigationOnClickListener(v -> finish());
 
@@ -96,9 +98,7 @@ public class AgentChatActivity extends AppCompatActivity {
         progressBar.setVisibility(state.loading ? View.VISIBLE : View.GONE);
         errorView.setVisibility(state.errorMessage == null || state.errorMessage.trim().isEmpty() ? View.GONE : View.VISIBLE);
         errorView.setText(state.errorMessage == null ? "" : state.errorMessage);
-        contextSummaryView.setText(state.contextSummary);
         adapter.submitList(state.messages);
-        emptyHintView.setVisibility(state.messages.isEmpty() && !state.loading ? View.VISIBLE : View.GONE);
         if (!state.messages.isEmpty()) {
             recyclerView.scrollToPosition(state.messages.size() - 1);
         }

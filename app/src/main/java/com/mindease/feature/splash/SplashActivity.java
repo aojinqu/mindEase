@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.mindease.R;
 import com.mindease.app.MindEaseApp;
+import com.mindease.common.ui.WindowInsetsHelper;
 import com.mindease.feature.auth.AuthActivity;
 import com.mindease.feature.main.MainActivity;
 import com.mindease.feature.onboarding.OnboardingActivity;
@@ -20,6 +21,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        WindowInsetsHelper.enableEdgeToEdge(this);
         setContentView(R.layout.activity_splash);
         viewModel = new ViewModelProvider(this).get(SplashViewModel.class);
 

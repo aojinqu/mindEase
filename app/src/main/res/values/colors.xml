@@ -33,6 +33,18 @@
     <color name="md_theme_light_surfaceHighlight">#EAF7FF</color>
     <color name="md_theme_light_surfaceInfo">#EAF0FF</color>
     <color name="md_theme_light_divider">#D8DEED</color>
+    <color name="brand_cloud_mint">#97E7D6</color>
+    <color name="brand_cloud_cyan">#6BCBF1</color>
+    <color name="brand_cloud_blue">#4A97E8</color>
+    <color name="brand_cloud_indigo">#7688F0</color>
+    <color name="brand_cloud_axis">#7081A4</color>
+    <color name="brand_cloud_grid">#BFD4EB</color>
+    <color name="brand_cloud_text">#223E73</color>
+    <color name="brand_cloud_subtle">#5F77A2</color>
+    <color name="brand_cloud_surface">#F8FCFF</color>
+    <color name="brand_cloud_positive">#7ADCC8</color>
+    <color name="brand_cloud_neutral">#79BCEE</color>
+    <color name="brand_cloud_negative">#A59AF3</color>
 
     <color name="md_theme_dark_primary">#BEC7FF</color>
     <color name="md_theme_dark_onPrimary">#25357A</color>

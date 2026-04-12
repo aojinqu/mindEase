@@ -102,7 +102,7 @@ public class AppContainer {
         communityRepository = new CommunityRepositoryImpl(
                 FirebaseFirestore.getInstance(),
                 userRepository,
-                new AnonymousIdentityService(),
+                new AnonymousIdentityService(sessionManager),
                 new ContentModerationService(),
                 new SystemTimeProvider()
         );

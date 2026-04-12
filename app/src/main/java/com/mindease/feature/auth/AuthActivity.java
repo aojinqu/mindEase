@@ -14,6 +14,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.mindease.R;
 import com.mindease.app.MindEaseApp;
+import com.mindease.common.ui.WindowInsetsHelper;
 import com.mindease.common.session.SessionManager;
 import com.mindease.feature.main.MainActivity;
 
@@ -32,7 +33,9 @@ public class AuthActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        WindowInsetsHelper.enableEdgeToEdge(this);
         setContentView(R.layout.activity_auth);
+        WindowInsetsHelper.applyTopAndBottomPadding(findViewById(R.id.root_auth));
         viewModel = new ViewModelProvider(this).get(AuthViewModel.class);
         bindViews();
         bindActions();

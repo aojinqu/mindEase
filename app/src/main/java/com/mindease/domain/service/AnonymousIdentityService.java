@@ -1,5 +1,7 @@
 package com.mindease.domain.service;
 
+import com.mindease.common.session.SessionManager;
+
 import java.util.Locale;
 
 public class AnonymousIdentityService {
@@ -11,7 +13,23 @@ public class AnonymousIdentityService {
             "Panda", "Fox", "Whale", "Otter", "Robin", "Maple", "Cloud", "Comet"
     };
 
+    private final SessionManager sessionManager;
+
+    public AnonymousIdentityService() {
+        this(null);
+    }
+
+    public AnonymousIdentityService(SessionManager sessionManager) {
+        this.sessionManager = sessionManager;
+    }
+
     public String displayNameForUser(String userId) {
+        if (sessionManager != null) {
+            String savedName = sessionManager.getAnonymousName();
+            if (savedName != null && !savedName.trim().isEmpty()) {
+                return savedName.trim();
+            }
+        }
         if (userId == null || userId.trim().isEmpty()) {
             return "QuietPanda";
         }

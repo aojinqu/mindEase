@@ -3,15 +3,15 @@
     <style name="TextAppearance.MindEase.Display" parent="TextAppearance.Material3.HeadlineMedium">
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textColor">?attr/colorOnBackground</item>
-        <item name="android:textSize">31sp</item>
-        <item name="android:lineSpacingExtra">4dp</item>
-        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:lineSpacingExtra">2dp</item>
+        <item name="android:letterSpacing">-0.008</item>
     </style>
 
     <style name="TextAppearance.MindEase.Headline" parent="TextAppearance.Material3.TitleLarge">
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
-        <item name="android:textSize">22sp</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:lineSpacingExtra">2dp</item>
         <item name="android:letterSpacing">-0.01</item>
     </style>
@@ -19,29 +19,29 @@
     <style name="TextAppearance.MindEase.Title" parent="TextAppearance.Material3.TitleMedium">
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">15sp</item>
         <item name="android:letterSpacing">-0.005</item>
     </style>
 
     <style name="TextAppearance.MindEase.Body" parent="TextAppearance.Material3.BodyMedium">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
-        <item name="android:textSize">15sp</item>
-        <item name="android:lineSpacingExtra">3dp</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:lineSpacingExtra">2dp</item>
     </style>
 
     <style name="TextAppearance.MindEase.Supporting" parent="TextAppearance.Material3.BodyMedium">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:lineSpacingExtra">2dp</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:lineSpacingExtra">1dp</item>
     </style>
 
     <style name="TextAppearance.MindEase.Label" parent="TextAppearance.Material3.LabelLarge">
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textColor">?attr/colorPrimary</item>
-        <item name="android:textSize">12sp</item>
-        <item name="android:letterSpacing">0.08</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:letterSpacing">0.06</item>
         <item name="android:textAllCaps">true</item>
     </style>
 
@@ -68,7 +68,7 @@
         <item name="android:minHeight">56dp</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textSize">15sp</item>
+        <item name="android:textSize">13sp</item>
         <item name="android:letterSpacing">0.01</item>
         <item name="backgroundTint">?attr/colorPrimary</item>
         <item name="android:textColor">?attr/colorOnPrimary</item>
@@ -82,7 +82,7 @@
         <item name="android:minHeight">56dp</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textSize">15sp</item>
+        <item name="android:textSize">13sp</item>
         <item name="strokeColor">?attr/colorOutline</item>
         <item name="strokeWidth">1dp</item>
         <item name="android:textColor">?attr/colorPrimary</item>
@@ -96,7 +96,7 @@
         <item name="android:minHeight">52dp</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="Widget.MindEase.TextInputLayout" parent="Widget.Material3.TextInputLayout.FilledBox">
@@ -163,6 +163,113 @@
 
     <style name="TextAppearance.MindEase.BottomNav" parent="TextAppearance.Material3.LabelMedium">
         <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">11sp</item>
+    </style>
+
+    <style name="TextAppearance.MindEase.HomeHeroTitle" parent="TextAppearance.Material3.HeadlineLarge">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">#202A68</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:lineSpacingExtra">2dp</item>
+        <item name="android:letterSpacing">-0.012</item>
+    </style>
+
+    <style name="TextAppearance.MindEase.HomeHeroSubtitle" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">#32418C</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:lineSpacingExtra">2dp</item>
+    </style>
+
+    <style name="TextAppearance.MindEase.HomeSectionTitle" parent="TextAppearance.Material3.DisplaySmall">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">#202A68</item>
+        <item name="android:textSize">21sp</item>
+        <item name="android:letterSpacing">-0.02</item>
+    </style>
+
+    <style name="TextAppearance.MindEase.HomeBodyLarge" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">#2D397C</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:lineSpacingExtra">2dp</item>
+    </style>
+
+    <style name="TextAppearance.MindEase.HomeCardTitle" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">#2A3478</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:letterSpacing">-0.01</item>
+    </style>
+
+    <style name="TextAppearance.MindEase.HomeChatTitle" parent="TextAppearance.MindEase.HomeCardTitle">
+        <item name="android:textSize">14sp</item>
+        <item name="android:letterSpacing">-0.005</item>
+    </style>
+
+    <style name="TextAppearance.MindEase.HomeCardBodyStrong" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">#26357B</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:lineSpacingExtra">2dp</item>
+    </style>
+
+    <style name="TextAppearance.MindEase.HomeCardBody" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">#41509A</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:lineSpacingExtra">3dp</item>
+    </style>
+
+    <style name="TextAppearance.MindEase.HomeCardBodySoft" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">#6B76B8</item>
         <item name="android:textSize">12sp</item>
+        <item name="android:lineSpacingExtra">2dp</item>
+    </style>
+
+    <style name="TextAppearance.MindEase.HomeButton" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">#FFFFFFFF</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="TextAppearance.MindEase.HomeButtonSmall" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">#FFFFFFFF</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="TextAppearance.MindEase.AnalysisLegend" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">#5C63A3</item>
+        <item name="android:textSize">11sp</item>
+    </style>
+
+    <style name="TextAppearance.MindEase.AnalysisMoodTitle" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">#2B3478</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="TextAppearance.MindEase.AnalysisDistributionLine" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">#4A569B</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="TextAppearance.MindEase.AnalysisSentimentLine" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">#5765A7</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="TextAppearance.MindEase.AnalysisDistributionLegend" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">#5765A7</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:lineSpacingExtra">2dp</item>
     </style>
 </resources>

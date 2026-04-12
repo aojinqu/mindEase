@@ -18,111 +18,16 @@
         app:title="@string/agent_title"
         app:titleTextAppearance="@style/TextAppearance.MindEase.Title" />
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card_agent_header"
-        style="@style/Widget.MindEase.Card.Highlight"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar_agent_chat">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="18dp">
-
-            <TextView
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:background="@drawable/bg_agent_avatar"
-                android:gravity="center"
-                android:text="@string/agent_avatar_glyph"
-                android:textColor="?attr/colorOnPrimary"
-                android:textSize="20sp" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="14dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/agent_header_eyebrow"
-                    android:textAppearance="@style/TextAppearance.MindEase.Label" />
-
-                <TextView
-                    android:id="@+id/tv_agent_context_summary"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="@string/agent_context_placeholder"
-                    android:textAppearance="@style/TextAppearance.MindEase.Body" />
-            </LinearLayout>
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-    <HorizontalScrollView
-        android:id="@+id/scroll_agent_quick_prompts"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:clipToPadding="false"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:scrollbars="none"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/card_agent_header">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_quick_prompt_grounding"
-                style="@style/Widget.MindEase.Button.Tonal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/agent_quick_cta_grounding" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_quick_prompt_stress"
-                style="@style/Widget.MindEase.Button.Tonal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="@string/agent_quick_cta_stress" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_quick_prompt_sleep"
-                style="@style/Widget.MindEase.Button.Tonal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="@string/agent_quick_cta_sleep" />
-        </LinearLayout>
-    </HorizontalScrollView>
-
     <FrameLayout
         android:id="@+id/container_agent_messages"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="8dp"
         android:layout_marginBottom="12dp"
         app:layout_constraintBottom_toTopOf="@id/card_agent_input"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/scroll_agent_quick_prompts">
+        app:layout_constraintTop_toBottomOf="@id/toolbar_agent_chat">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_agent_messages"
@@ -133,16 +38,6 @@
             android:paddingTop="8dp"
             android:paddingEnd="20dp"
             android:paddingBottom="12dp" />
-
-        <TextView
-            android:id="@+id/tv_agent_empty_hint"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:padding="32dp"
-            android:text="@string/agent_empty_hint"
-            android:textAppearance="@style/TextAppearance.MindEase.Supporting" />
 
         <ProgressBar
             android:id="@+id/progress_agent_loading"
@@ -178,6 +73,43 @@
                 android:textColor="?attr/colorError"
                 android:visibility="gone" />
 
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:paddingBottom="10dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_quick_prompt_grounding"
+                        style="@style/Widget.MindEase.Button.Tonal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/agent_quick_cta_grounding" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_quick_prompt_stress"
+                        style="@style/Widget.MindEase.Button.Tonal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="@string/agent_quick_cta_stress" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_quick_prompt_sleep"
+                        style="@style/Widget.MindEase.Button.Tonal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="@string/agent_quick_cta_sleep" />
+                </LinearLayout>
+            </HorizontalScrollView>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -188,18 +120,18 @@
                     style="@style/Widget.MindEase.TextInputLayout"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="@string/agent_input_hint">
+                    android:layout_weight="1">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_agent_input"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="top|start"
+                        android:gravity="center_vertical|start"
                         android:imeOptions="actionSend"
-                        android:inputType="textCapSentences|textMultiLine"
-                        android:maxLines="4"
-                        android:minLines="2" />
+                        android:inputType="textCapSentences"
+                        android:maxLines="1"
+                        android:minLines="1"
+                        android:singleLine="true" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.button.MaterialButton

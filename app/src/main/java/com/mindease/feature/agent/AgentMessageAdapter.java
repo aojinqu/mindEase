@@ -71,6 +71,9 @@ public class AgentMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private String formatMeta(AgentMessage message) {
         String time = formatTime(message.createdAt);
         String status = message.status == null ? "" : message.status;
+        if (status.contains("thinking")) {
+            return time.isEmpty() ? "thinking..." : time + "  thinking...";
+        }
         if (status.contains("fallback")) {
             return time.isEmpty() ? "fallback reply" : time + "  fallback reply";
         }
@@ -107,7 +110,7 @@ public class AgentMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         private void bind(AgentMessage message, String metaText) {
-            messageView.setText(message.text);
+            SimpleMarkdownFormatter.apply(messageView, message.text);
             metaView.setText(metaText);
         }
     }

@@ -198,6 +198,8 @@ Local DB    Remote API/Firebase
 - 标签筛选
 - 点赞/支持互动
 - 帖子详情查看
+- 评论/回复
+- 删除自己发布的帖子与评论
 - 基础敏感词审核
 
 #### 9）个人中心与设置模块
@@ -318,7 +320,8 @@ MainActivity 内部通过 Bottom Navigation 承载以下主页面 Fragment：
 
 - 帖子完整内容
 - 点赞数、评论数
-- 评论区（可在 MVP 中预留）
+- 评论列表、回复输入与删除入口
+- 仅对作者显示帖子删除按钮
 
 #### ProfileFragment
 
@@ -529,6 +532,7 @@ MainActivity(CommunityFragment)
 |---|---|---|
 | post_id | TEXT PK | 帖子 ID |
 | anonymous_user_id | TEXT | 匿名身份 ID |
+| author_user_id | TEXT | 实际作者用户 ID（仅权限判断使用，不对外展示） |
 | anonymous_name | TEXT | 匿名显示名 |
 | content | TEXT | 帖子正文 |
 | emotion_tag | TEXT | 主要情绪标签 |
@@ -545,7 +549,10 @@ MainActivity(CommunityFragment)
 | comment_id | TEXT PK | 评论 ID |
 | post_id | TEXT | 所属帖子 |
 | anonymous_user_id | TEXT | 匿名用户 ID |
+| parent_comment_id | TEXT | 父评论 ID，顶层评论可为空 |
+| author_user_id | TEXT | 实际作者用户 ID（仅权限判断使用） |
 | content | TEXT | 评论内容 |
+| like_count | INTEGER | 评论点赞数 |
 | created_at | TIMESTAMP | 创建时间 |
 
 ### 6.4 实体关系
@@ -728,7 +735,6 @@ CommunityPost 1 ---- N PostComment
 
 ### 8.2 MVP 中建议弱化或延期的部分
 
-- 评论/回复
 - AI 安慰重写
 - 共鸣匹配
 - 情绪骤降通知
@@ -886,6 +892,13 @@ AnalysisFragment 请求近 7/30 天数据
 -> CreateCommunityPostUseCase
 -> CommunityRepository 上传 Firestore
 -> 社区列表刷新
+
+用户进入帖子详情页
+-> 加载帖子、评论与点赞状态
+-> 可发表评论或回复评论
+-> 仅作者可删除自己的帖子
+-> 仅评论作者且无子回复时可删除评论
+-> 删除成功后刷新详情或返回社区列表
 ```
 
 ### 10.4 心理疗愈 Agent 对话流程
@@ -953,7 +966,7 @@ AnalysisFragment 请求近 7/30 天数据
 ### 12.3 第三阶段
 
 - 增加提醒通知
-- 增加评论/举报
+- 增加举报、复杂审核与社区治理能力
 - 增加心理资源入口与紧急支持信息
 
 ---

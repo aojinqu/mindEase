@@ -2,6 +2,8 @@ package com.mindease.data.repository;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -11,6 +13,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
+import com.google.firebase.firestore.WriteBatch;
 import com.mindease.common.result.DataCallback;
 import com.mindease.domain.model.CommunityComment;
 import com.mindease.domain.model.CommunityPost;
@@ -76,6 +79,7 @@ public class CommunityRepositoryImpl implements CommunityRepository {
         String postId = UUID.randomUUID().toString();
         CommunityPost post = new CommunityPost(
                 postId,
+                userId,
                 anonymousIdentityService.displayNameForUser(userId),
                 cleaned,
                 normalizeTag(emotionTag),
@@ -143,7 +147,30 @@ public class CommunityRepositoryImpl implements CommunityRepository {
     }
 
     @Override
-    public void likePost(String postId, DataCallback<Boolean> callback) {
+    public void deletePost(String postId, DataCallback<Boolean> callback) {
+        if (postId == null || postId.trim().isEmpty()) {
+            callback.onError("Post not found.");
+            return;
+        }
+        DocumentReference postRef = postsCollection().document(postId);
+        postRef.get()
+                .addOnSuccessListener(document -> {
+                    CommunityPost post = mapPost(document);
+                    if (post == null) {
+                        callback.onError("Post not found.");
+                        return;
+                    }
+                    if (!userRepository.currentUserId().equals(post.authorUserId)) {
+                        callback.onError("Only the author can delete this post.");
+                        return;
+                    }
+                    deletePostCascade(postRef, callback);
+                })
+                .addOnFailureListener(e -> callback.onError(readableError(e, "Failed to delete post.")));
+    }
+
+    @Override
+    public void togglePostLike(String postId, DataCallback<Boolean> callback) {
         String userId = userRepository.currentUserId();
         DocumentReference postRef = postsCollection().document(postId);
         DocumentReference likeRef = postRef.collection(COLLECTION_LIKES).document(userId);
@@ -154,6 +181,8 @@ public class CommunityRepositoryImpl implements CommunityRepository {
                 throw new IllegalStateException("Post not found.");
             }
             if (transaction.get(likeRef).exists()) {
+                transaction.delete(likeRef);
+                transaction.update(postRef, "likeCount", FieldValue.increment(-1));
                 return false;
             }
             Map<String, Object> likeData = new HashMap<>();
@@ -163,7 +192,7 @@ public class CommunityRepositoryImpl implements CommunityRepository {
             transaction.update(postRef, "likeCount", FieldValue.increment(1));
             return true;
         }).addOnSuccessListener(callback::onSuccess)
-                .addOnFailureListener(e -> callback.onError(readableError(e, "Failed to like post.")));
+                .addOnFailureListener(e -> callback.onError(readableError(e, "Failed to update post like.")));
     }
 
     @Override
@@ -211,7 +240,7 @@ public class CommunityRepositoryImpl implements CommunityRepository {
     }
 
     @Override
-    public void likeComment(String postId, String commentId, DataCallback<Boolean> callback) {
+    public void toggleCommentLike(String postId, String commentId, DataCallback<Boolean> callback) {
         String userId = userRepository.currentUserId();
         DocumentReference commentRef = commentDocument(postId, commentId);
         DocumentReference likeRef = commentRef.collection(COLLECTION_LIKES).document(userId);
@@ -222,6 +251,8 @@ public class CommunityRepositoryImpl implements CommunityRepository {
                 throw new IllegalStateException("Comment not found.");
             }
             if (transaction.get(likeRef).exists()) {
+                transaction.delete(likeRef);
+                transaction.update(commentRef, "likeCount", FieldValue.increment(-1));
                 return false;
             }
             Map<String, Object> likeData = new HashMap<>();
@@ -231,7 +262,7 @@ public class CommunityRepositoryImpl implements CommunityRepository {
             transaction.update(commentRef, "likeCount", FieldValue.increment(1));
             return true;
         }).addOnSuccessListener(callback::onSuccess)
-                .addOnFailureListener(e -> callback.onError(readableError(e, "Failed to like comment.")));
+                .addOnFailureListener(e -> callback.onError(readableError(e, "Failed to update comment like.")));
     }
 
     @Override
@@ -386,12 +417,70 @@ public class CommunityRepositoryImpl implements CommunityRepository {
         }
     }
 
+    private void deletePostCascade(DocumentReference postRef, DataCallback<Boolean> callback) {
+        commentsCollection(postRef.getId()).get()
+                .addOnSuccessListener(commentSnapshot ->
+                        postRef.collection(COLLECTION_LIKES).get()
+                                .addOnSuccessListener(postLikesSnapshot -> {
+                                    List<DocumentReference> refsToDelete = new ArrayList<>();
+                                    refsToDelete.add(postRef);
+                                    collectSnapshotReferences(postLikesSnapshot, refsToDelete);
+                                    collectSnapshotReferences(commentSnapshot, refsToDelete);
+                                    List<Task<QuerySnapshot>> commentLikeTasks = new ArrayList<>();
+                                    if (commentSnapshot != null) {
+                                        for (QueryDocumentSnapshot commentDocument : commentSnapshot) {
+                                            commentLikeTasks.add(commentDocument.getReference().collection(COLLECTION_LIKES).get());
+                                        }
+                                    }
+                                    if (commentLikeTasks.isEmpty()) {
+                                        commitDeletes(refsToDelete, callback);
+                                        return;
+                                    }
+                                    Tasks.whenAllSuccess(commentLikeTasks)
+                                            .addOnSuccessListener(results -> {
+                                                for (Object result : results) {
+                                                    if (result instanceof QuerySnapshot) {
+                                                        collectSnapshotReferences((QuerySnapshot) result, refsToDelete);
+                                                    }
+                                                }
+                                                commitDeletes(refsToDelete, callback);
+                                            })
+                                            .addOnFailureListener(e -> callback.onError(readableError(e, "Failed to delete post.")));
+                                })
+                                .addOnFailureListener(e -> callback.onError(readableError(e, "Failed to delete post."))))
+                .addOnFailureListener(e -> callback.onError(readableError(e, "Failed to delete post.")));
+    }
+
+    private void collectSnapshotReferences(QuerySnapshot snapshot, List<DocumentReference> refsToDelete) {
+        if (snapshot == null || snapshot.isEmpty()) {
+            return;
+        }
+        for (QueryDocumentSnapshot document : snapshot) {
+            refsToDelete.add(document.getReference());
+        }
+    }
+
+    private void commitDeletes(List<DocumentReference> refsToDelete, DataCallback<Boolean> callback) {
+        if (refsToDelete.size() > 450) {
+            callback.onError("This post is too large to delete in one request.");
+            return;
+        }
+        WriteBatch batch = firestore.batch();
+        for (DocumentReference ref : refsToDelete) {
+            batch.delete(ref);
+        }
+        batch.commit()
+                .addOnSuccessListener(unused -> callback.onSuccess(true))
+                .addOnFailureListener(e -> callback.onError(readableError(e, "Failed to delete post.")));
+    }
+
     private CommunityPost mapPost(DocumentSnapshot document) {
         if (document == null || !document.exists()) {
             return null;
         }
         return new CommunityPost(
                 readString(document, "id", document.getId()),
+                readString(document, "authorUserId", "guest"),
                 readString(document, "anonymousName", "Anonymous"),
                 readString(document, "content", ""),
                 readString(document, "emotionTag", "Stress"),
@@ -437,8 +526,22 @@ public class CommunityRepositoryImpl implements CommunityRepository {
         if (emotionTag == null || emotionTag.trim().isEmpty()) {
             return "Stress";
         }
-        String trimmed = emotionTag.trim();
-        return trimmed.substring(0, 1).toUpperCase(Locale.US) + trimmed.substring(1);
+        String trimmed = emotionTag.trim().replace("#", "");
+        String[] parts = trimmed.split("\\s+");
+        StringBuilder normalized = new StringBuilder();
+        for (String part : parts) {
+            if (part.isEmpty()) {
+                continue;
+            }
+            if (normalized.length() > 0) {
+                normalized.append(' ');
+            }
+            normalized.append(part.substring(0, 1).toUpperCase(Locale.US));
+            if (part.length() > 1) {
+                normalized.append(part.substring(1).toLowerCase(Locale.US));
+            }
+        }
+        return normalized.length() == 0 ? "Stress" : normalized.toString();
     }
 
     private CollectionReference postsCollection() {

@@ -2,9 +2,9 @@
 
 ## 1. 当前状态
 
-- 项目阶段：`v0.6-agent-chat-ui-connected`（Agent 聊天前后端已接通）
+- 项目阶段：`v0.7-community-interaction-aligned`（社区评论/回复/删除能力与文档已对齐）
 - 开发状态：`进行中`
-- 更新时间：`2026-04-11`
+- 更新时间：`2026-04-12`
 
 ## 2. 本次完成（根据 PRD + 技术设计）
 
@@ -165,7 +165,8 @@
 ### 3.3 P2（增强能力）
 
 - 匿名社区发帖与浏览：`已完成（含独立发帖页 + 详情页）`
-- Firebase 接入：`未开始`
+- 社区评论 / 回复 / 删除自己的内容：`已完成`
+- Firebase / Firestore 社区接入：`已完成（帖子、评论、点赞已接通）`
 - 心理疗愈 Agent 后端：`已完成（会话/消息/Prompt/风控/降级）`
 - 心理疗愈 Agent 前端对话页：`已完成（聊天页 + 首页入口 + 后端接线）`
 - UI细化与空状态：`进行中`
@@ -181,12 +182,14 @@
 - 个性化建议：`已完成（规则建议）`
 - 心理疗愈 Agent：`已完成基础聊天闭环`
 - 匿名发帖与浏览：`已完成（含发帖页、详情页、筛选与跳转）`
+- 社区评论 / 回复 / 删除自己的帖子与评论：`已完成`
 - 页面真实数据流：`已完成（MoodEditor -> Home/Analysis/Calendar/Community）`
 - 模拟器可运行：`已通过 assembleDebug 构建验证`
 
 ## 5. 风险与备注
 
 - 已完成核心领域逻辑 + MVP 前端主流程闭环 + 页面真实数据绑定
+- 社区模块已接通 Firestore，但复杂审核、举报与大规模删除策略仍需后续补强
 - Agent 前后端已完成基础聊天闭环，但尚未接入真实线上中转站联调验证
 - 外部中转站依赖 Gradle 属性配置：`mindease.chat.baseUrl`、`mindease.chat.apiKey`、`mindease.chat.model`
 - 当前远程调用按 OpenAI 兼容 `/chat/completions` 结构实现，如中转站协议不同需再适配 DTO
@@ -196,7 +199,7 @@
 
 1. 根据实际外部中转站协议调整 `TherapyAgentService` 请求/响应字段并完成真机联调
 2. 补充聊天页会话列表、重新开始对话与重试交互
-3. 接入 Firebase/Firestore 并替换社区本地内存实现
+3. 补充社区举报、复杂审核与删除边界处理
 4. 补充 Agent 的 Room 集成测试与异常链路测试
 5. 打磨消息发送中的 loading、失败重试与风险提示视觉层级
 
@@ -240,6 +243,14 @@
 - 修复根构建缺失的 `google-services` 插件别名，恢复 `gradlew test`
 - 新增 Agent 单测并验证通过：`gradlew test`、`gradlew assembleDebug`
 - 更新 `BOARD.md`：同步 Agent 后端进度、剩余前端接入任务与配置说明
+
+### 2026-04-12
+
+- 检查 `PRD.md`、`TECHNICAL_DESIGN.md`、`BOARD.md` 与当前代码实现的一致性
+- 更新社区相关文档：补充评论、回复、删除自己帖子/评论的现状说明
+- 修正文档中关于社区“评论区预留”“Firestore 未接入”“评论回复未实现”的过时描述
+- 新增帖子删除能力并完成详情页删除入口接线
+- 构建验证通过：`gradlew assembleDebug`
 
 ## 8. 测试模块（新增）
 
@@ -288,21 +299,22 @@
 
 ### 9.2 后端/数据层未完成
 
-已在 `2026-04-08` 本轮完成（本地后端闭环）：
+已在当前代码中完成：
 
 - 账号仓储占位已替换：`AuthRepositoryImpl` 已接入 `SessionManager` 登录态读取。
 - 用户隔离已生效：`UserRepositoryImpl` 基于登录邮箱生成稳定 `user_id`（不再固定 `guest`）。
 - Room 主链路已打通：`RoomMoodRepository` 已接入 `MoodRecordDao/MoodTagDao/MoodRecordTagDao`，支持按 `user_id` 的记录增删改查与标签关联持久化。
 - 社区内容审核与匿名身份映射已实现：新增 `ContentModerationService`、`AnonymousIdentityService`，帖子展示已包含匿名名且发布内容会做审核清洗。
+- 社区云端数据已接入：`CommunityRepositoryImpl` 已基于 Firestore 读写帖子、评论与点赞数据。
+- 社区互动已形成闭环：支持帖子点赞、评论、回复、删除自己的帖子，以及删除自己发布且无子回复的评论。
 - AI 分析通道与降级链路已形成：新增 `AiAnalysisService`，分析流程先尝试 AI 总结，失败自动回退规则分析文案。
 - 建议数据已按用户隔离：`SuggestionRepositoryImpl` 由全局单例建议改为按 `user_id` 存取。
 
 仍待外部平台/后续迭代（非本地单机后端可完全闭环项）：
 
-- 社区云端数据未接入（Firestore/远程 API 仍未接入）。
 - 心理疗愈 Agent 会话列表、会话切换与历史管理尚未实现。
 - 外部中转站协议尚未用真实线上参数联调，当前按 OpenAI 兼容 chat 接口预留。
-- 评论/回复、举报、复杂审核等社区增强功能未实现。
+- 举报、复杂审核、批量治理等社区增强功能未实现。
 - 多设备同步与远程数据一致性策略未实现。
 
 ### 9.3 测试与质量缺口

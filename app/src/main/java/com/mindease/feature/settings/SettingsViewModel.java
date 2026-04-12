@@ -8,17 +8,12 @@ public class SettingsViewModel extends ViewModel {
 
     public SettingsState load(SessionManager sessionManager) {
         return new SettingsState(
-                sessionManager.isPrivacyModeEnabled(),
-                sessionManager.isDailyReminderEnabled()
+                sessionManager.isPrivacyModeEnabled()
         );
     }
 
     public void setPrivacyMode(SessionManager sessionManager, boolean enabled) {
         sessionManager.setPrivacyModeEnabled(enabled);
-    }
-
-    public void setDailyReminder(SessionManager sessionManager, boolean enabled) {
-        sessionManager.setDailyReminderEnabled(enabled);
     }
 
     public void logout(SessionManager sessionManager) {
@@ -27,11 +22,9 @@ public class SettingsViewModel extends ViewModel {
 
     public static class SettingsState {
         public final boolean privacyMode;
-        public final boolean dailyReminder;
 
-        public SettingsState(boolean privacyMode, boolean dailyReminder) {
+        public SettingsState(boolean privacyMode) {
             this.privacyMode = privacyMode;
-            this.dailyReminder = dailyReminder;
         }
     }
 }

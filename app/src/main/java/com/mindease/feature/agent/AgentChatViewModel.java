@@ -33,7 +33,7 @@ public class AgentChatViewModel extends ViewModel {
                 AgentSession session = resolveSession(container);
                 List<AgentMessage> messages = container.getAgentSessionHistoryUseCase.execute(session.id);
                 String contextSummary = session.latestContextSummary == null || session.latestContextSummary.trim().isEmpty()
-                        ? "Recent mood context will appear here after the first reply."
+                        ? "Recent mood context is ready."
                         : session.latestContextSummary;
                 state.postValue(AgentChatState.ready(messages, contextSummary, extractDiagnostic(messages)));
             } catch (Exception e) {
@@ -59,6 +59,15 @@ public class AgentChatViewModel extends ViewModel {
                 trimmed,
                 "",
                 "pending",
+                System.currentTimeMillis()
+        ));
+        optimisticMessages.add(new AgentMessage(
+                "pending-assistant",
+                activeSessionId,
+                "assistant",
+                "Thinking...",
+                "",
+                "thinking",
                 System.currentTimeMillis()
         ));
         state.setValue(current.withSending(true, optimisticMessages, current.contextSummary, null));
@@ -171,13 +180,14 @@ public class AgentChatViewModel extends ViewModel {
             if (!"assistant".equals(message.role)) {
                 continue;
             }
+            if (message.status == null || !message.status.contains("fallback")) {
+                return null;
+            }
             String diagnostic = extractJsonField(message.promptContextJson, "\"diagnostic\"");
             if (diagnostic != null && !diagnostic.trim().isEmpty()) {
                 return diagnostic;
             }
-            if (message.status != null && message.status.contains("fallback")) {
-                return "Qwen switched to fallback mode. Check your DashScope API settings and network connection.";
-            }
+            return "Qwen switched to fallback mode. Check your DashScope API settings and network connection.";
         }
         return null;
     }

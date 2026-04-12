@@ -33,16 +33,20 @@ public class PromptContextBuilder {
         Suggestion suggestion = suggestionRepository.latest();
 
         String latestMood = summarizeLatestMood(recentRecords);
+        String sevenDayTrend = summarizeSevenDayTrend(report);
         String topTags = summarizeTopTags(report.tagFrequency);
+        String recentMoodTimeline = summarizeRecentMoodTimeline(recentRecords);
         String summary = "Latest mood: " + latestMood
-                + " | 7-day trend: " + report.summaryText
+                + " | 7-day trend: " + sevenDayTrend
                 + " | Top tags: " + topTags
+                + " | Recent moods: " + recentMoodTimeline
                 + " | Latest suggestion: " + suggestion.text;
 
         String promptContextJson = "{"
                 + "\"latestMood\":\"" + escapeJson(latestMood) + "\","
-                + "\"sevenDaySummary\":\"" + escapeJson(report.summaryText) + "\","
+                + "\"sevenDaySummary\":\"" + escapeJson(sevenDayTrend) + "\","
                 + "\"topTags\":\"" + escapeJson(topTags) + "\","
+                + "\"recentMoodTimeline\":\"" + escapeJson(recentMoodTimeline) + "\","
                 + "\"latestSuggestion\":\"" + escapeJson(suggestion.text) + "\","
                 + "\"recentChatSummary\":\"" + escapeJson(summarizeRecentMessages(recentMessages)) + "\""
                 + "}";
@@ -67,14 +71,53 @@ public class PromptContextBuilder {
             return "none";
         }
         String bestTag = "none";
+        String secondTag = null;
         int bestCount = 0;
+        int secondCount = 0;
         for (Map.Entry<String, Integer> entry : tagFrequency.entrySet()) {
             if (entry.getValue() > bestCount) {
+                secondTag = bestTag;
+                secondCount = bestCount;
                 bestTag = entry.getKey();
                 bestCount = entry.getValue();
+            } else if (entry.getValue() > secondCount) {
+                secondTag = entry.getKey();
+                secondCount = entry.getValue();
             }
         }
-        return bestTag + " (" + bestCount + ")";
+        if (secondTag == null || "none".equals(secondTag)) {
+            return bestTag + " (" + bestCount + ")";
+        }
+        return bestTag + " (" + bestCount + "), " + secondTag + " (" + secondCount + ")";
+    }
+
+    private String summarizeSevenDayTrend(AnalysisReport report) {
+        return "positive " + report.positiveCount
+                + ", neutral " + report.neutralCount
+                + ", negative " + report.negativeCount
+                + "; " + report.summaryText;
+    }
+
+    private String summarizeRecentMoodTimeline(List<MoodRecord> records) {
+        if (records == null || records.isEmpty()) {
+            return "no recent moods";
+        }
+        StringBuilder builder = new StringBuilder();
+        int limit = Math.min(3, records.size());
+        for (int i = 0; i < limit; i++) {
+            MoodRecord record = records.get(i);
+            if (i > 0) {
+                builder.append(" | ");
+            }
+            String tags = record.tags == null || record.tags.isEmpty() ? "no tags" : String.join(", ", record.tags);
+            builder.append(record.moodType)
+                    .append(" (")
+                    .append(record.moodIntensity)
+                    .append("/5, ")
+                    .append(tags)
+                    .append(")");
+        }
+        return builder.toString();
     }
 
     private String summarizeRecentMessages(List<AgentMessage> recentMessages) {

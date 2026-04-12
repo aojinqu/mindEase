@@ -23,8 +23,12 @@ public class CommunityViewModel extends ViewModel {
         container.communityRepository.getPostById(postId, callback);
     }
 
-    public void likePost(AppContainer container, String postId, DataCallback<Boolean> callback) {
-        container.communityRepository.likePost(postId, callback);
+    public void deletePost(AppContainer container, String postId, DataCallback<Boolean> callback) {
+        container.communityRepository.deletePost(postId, callback);
+    }
+
+    public void togglePostLike(AppContainer container, String postId, DataCallback<Boolean> callback) {
+        container.communityRepository.togglePostLike(postId, callback);
     }
 
     public void hasLikedPost(AppContainer container, String postId, DataCallback<Boolean> callback) {
@@ -43,8 +47,8 @@ public class CommunityViewModel extends ViewModel {
         container.communityRepository.replyToComment(postId, parentCommentId, content, callback);
     }
 
-    public void likeComment(AppContainer container, String postId, String commentId, DataCallback<Boolean> callback) {
-        container.communityRepository.likeComment(postId, commentId, callback);
+    public void toggleCommentLike(AppContainer container, String postId, String commentId, DataCallback<Boolean> callback) {
+        container.communityRepository.toggleCommentLike(postId, commentId, callback);
     }
 
     public void hasLikedComment(AppContainer container, String postId, String commentId, DataCallback<Boolean> callback) {

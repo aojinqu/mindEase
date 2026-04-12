@@ -1,25 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent">
+    android:background="@android:color/transparent"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:paddingStart="20dp"
+        android:paddingTop="18dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="28dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="THREAD"
+            android:textAppearance="@style/TextAppearance.MindEase.Label" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Community Detail"
+            android:textAppearance="@style/TextAppearance.MindEase.Display"
+            android:textColor="?attr/colorOnBackground"
+            android:textSize="32sp" />
 
         <com.google.android.material.card.MaterialCardView
-            style="@style/Widget.MindEase.Card.Highlight"
+            style="@style/Widget.MindEase.Card"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="5dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="18dp">
+                android:padding="20dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -28,54 +51,128 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/tv_detail_tag"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="#stress"
-                        android:textAppearance="@style/TextAppearance.MindEase.Label" />
-
-                    <Space
+                        android:id="@+id/tv_detail_name"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="CalmWhale610"
+                        android:textAppearance="@style/TextAppearance.MindEase.Headline"
+                        android:textSize="17sp" />
 
                     <TextView
                         android:id="@+id/tv_detail_meta"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="@style/TextAppearance.MindEase.Supporting" />
+                        android:text="04-12 06:34"
+                        android:textAppearance="@style/TextAppearance.MindEase.Supporting"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textSize="14sp" />
                 </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_detail_tag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:text="#STRESS"
+                    android:textAppearance="@style/TextAppearance.MindEase.Label"
+                    android:textColor="?attr/colorPrimary"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tv_detail_content"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:textAppearance="@style/TextAppearance.MindEase.Body" />
+                    android:textAppearance="@style/TextAppearance.MindEase.Body"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="18sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:gravity="center_vertical"
+                    android:layout_marginTop="18dp"
+                    android:baselineAligned="false"
                     android:orientation="horizontal">
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_detail_like"
-                        style="@style/Widget.MindEase.Button.Secondary"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="❤ Like" />
-
-                    <TextView
-                        android:id="@+id/tv_detail_replying"
+                    <LinearLayout
+                        android:id="@+id/layout_detail_like"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
+                        android:layout_height="52dp"
                         android:layout_weight="1"
-                        android:text=""
-                        android:textAppearance="@style/TextAppearance.MindEase.Supporting" />
+                        android:background="@drawable/bg_community_action_pill"
+                        android:backgroundTint="?attr/colorPrimary"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp">
+
+                        <ImageButton
+                            android:id="@+id/btn_detail_like"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@android:color/transparent"
+                            android:contentDescription="Like post"
+                            android:padding="8dp"
+                            android:src="@drawable/ic_community_heart_outline"
+                            app:tint="?attr/colorOnPrimary" />
+
+                        <TextView
+                            android:id="@+id/tv_detail_like_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:text="0"
+                            android:textAppearance="@style/TextAppearance.MindEase.Title"
+                            android:textColor="?attr/colorOnPrimary" />
+                    </LinearLayout>
+
+                    <Space
+                        android:layout_width="12dp"
+                        android:layout_height="wrap_content" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="52dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_community_action_pill"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_community_comment"
+                            app:tint="?attr/colorOnSurface" />
+
+                        <TextView
+                            android:id="@+id/tv_detail_comment_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:text="0"
+                            android:textAppearance="@style/TextAppearance.MindEase.Title"
+                            android:textColor="?attr/colorOnSurface" />
+                    </LinearLayout>
                 </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_detail_delete_post"
+                    style="@style/Widget.MindEase.Button.Secondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Delete This Post"
+                    android:visibility="gone" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -83,61 +180,64 @@
             style="@style/Widget.MindEase.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp">
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="4dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="18dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="💬 Join the thread"
-                    android:textAppearance="@style/TextAppearance.MindEase.Title" />
+                    android:text="Join the thread"
+                    android:textAppearance="@style/TextAppearance.MindEase.Headline"
+                    android:textSize="19sp" />
+
+                <TextView
+                    android:id="@+id/tv_detail_replying"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_community_action_pill"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:minHeight="44dp"
+                    android:paddingStart="14dp"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="14dp"
+                    android:paddingBottom="10dp"
+                    android:text=""
+                    android:textAppearance="@style/TextAppearance.MindEase.Supporting"
+                    android:visibility="gone" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MindEase.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp">
+                    android:layout_marginTop="12dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_detail_comment"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:gravity="top|start"
                         android:hint="Write a comment or reply"
-                        android:maxLines="4"
-                        android:minLines="2" />
+                        android:maxLines="5"
+                        android:minLines="3" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <LinearLayout
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_detail_send"
+                    style="@style/Widget.MindEase.Button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_detail_send"
-                        style="@style/Widget.MindEase.Button"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Send" />
-
-                    <Space
-                        android:layout_width="10dp"
-                        android:layout_height="wrap_content" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_detail_like_comment"
-                        style="@style/Widget.MindEase.Button.Secondary"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="❤ Like Comment" />
-                </LinearLayout>
+                    android:layout_marginTop="12dp"
+                    android:text="Send" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_detail_delete_comment"
@@ -152,18 +252,20 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="22dp"
             android:text="Comments"
-            android:textAppearance="@style/TextAppearance.MindEase.Title" />
+            android:textAppearance="@style/TextAppearance.MindEase.Headline"
+            android:textSize="20sp" />
 
         <ListView
             android:id="@+id/lv_detail_comments"
             android:layout_width="match_parent"
-            android:layout_height="320dp"
-            android:layout_marginTop="8dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
             android:background="@android:color/transparent"
             android:divider="@android:color/transparent"
-            android:dividerHeight="10dp" />
+            android:dividerHeight="12dp"
+            android:nestedScrollingEnabled="true" />
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

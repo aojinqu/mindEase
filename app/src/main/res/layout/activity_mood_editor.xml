@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root_mood_editor"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/transparent">
@@ -24,38 +25,6 @@
             android:text="Mood Record"
             android:textAppearance="@style/TextAppearance.MindEase.Display" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="🙂"
-                android:textAlignment="center"
-                android:textSize="26sp" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="🌤"
-                android:textAlignment="center"
-                android:textSize="26sp" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="✍"
-                android:textAlignment="center"
-                android:textSize="26sp" />
-        </LinearLayout>
-
         <com.google.android.material.card.MaterialCardView
             style="@style/Widget.MindEase.Card"
             android:layout_width="match_parent"
@@ -71,7 +40,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="🙂 Mood"
+                    android:text="Mood"
                     android:textAppearance="@style/TextAppearance.MindEase.Title" />
 
                 <com.google.android.material.chip.ChipGroup
@@ -109,72 +78,53 @@
                         android:layout_height="wrap_content"
                         android:checkable="true"
                         android:text="Sad" />
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/Widget.MindEase.Chip.Filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:checkable="true"
-                        android:text="Angry" />
                 </com.google.android.material.chip.ChipGroup>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MindEase.TextInputLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_custom_mood"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Custom mood"
-                        android:inputType="textCapWords" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_add_custom_mood"
-                    style="@style/Widget.MindEase.Button.Tonal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="+ Add" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            style="@style/Widget.MindEase.Card.Highlight"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="18dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🌤 Intensity"
-                    android:textAppearance="@style/TextAppearance.MindEase.Title" />
-
-                <SeekBar
-                    android:id="@+id/seek_intensity"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:max="4"
-                    android:progress="2" />
 
                 <TextView
                     android:id="@+id/tv_intensity_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="3/5"
+                    android:layout_marginTop="16dp"
+                    android:text="Intensity 3/5"
                     android:textAppearance="@style/TextAppearance.MindEase.Supporting" />
+
+                <SeekBar
+                    android:id="@+id/seek_intensity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:max="4"
+                    android:progress="2" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MindEase.TextInputLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_custom_mood"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Custom mood"
+                            android:inputType="textCapWords" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_add_custom_mood"
+                        style="@style/Widget.MindEase.Button.Tonal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text="+ Add" />
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -193,7 +143,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="✍ Notes"
+                    android:text="Notes"
                     android:textAppearance="@style/TextAppearance.MindEase.Title" />
 
                 <com.google.android.material.chip.ChipGroup
@@ -243,9 +193,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="120dp"
                         android:gravity="top|start"
-                        android:hint="A few words..."
+                        android:hint="What's on your mind?"
                         android:inputType="textMultiLine"
-                        android:minLines="4" />
+                        android:minLines="3" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -258,56 +208,23 @@
             android:layout_marginTop="16dp"
             android:text="Save" />
 
-        <LinearLayout
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_update_mood"
+            style="@style/Widget.MindEase.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:orientation="horizontal">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_update_mood"
-                style="@style/Widget.MindEase.Button.Secondary"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Update" />
-
-            <Space
-                android:layout_width="10dp"
-                android:layout_height="wrap_content" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_delete_mood"
-                style="@style/Widget.MindEase.Button.Secondary"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Delete" />
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="Recent"
-            android:textAppearance="@style/TextAppearance.MindEase.Title" />
-
-        <ListView
-            android:id="@+id/lv_recent_records"
-            android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:layout_marginTop="10dp"
-            android:background="@android:color/transparent"
-            android:dividerHeight="8dp" />
+            android:text="Update"
+            android:visibility="gone" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_clear_selection"
+            android:id="@+id/btn_delete_mood"
             style="@style/Widget.MindEase.Button.Secondary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:layout_marginBottom="16dp"
-            android:text="Clear" />
+            android:text="Delete"
+            android:visibility="gone" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

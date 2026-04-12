@@ -17,7 +17,9 @@ public interface CommunityRepository {
 
     void getPostById(String postId, DataCallback<CommunityPost> callback);
 
-    void likePost(String postId, DataCallback<Boolean> callback);
+    void deletePost(String postId, DataCallback<Boolean> callback);
+
+    void togglePostLike(String postId, DataCallback<Boolean> callback);
 
     void hasLikedPost(String postId, DataCallback<Boolean> callback);
 
@@ -27,7 +29,7 @@ public interface CommunityRepository {
 
     void listComments(String postId, DataCallback<List<CommunityComment>> callback);
 
-    void likeComment(String postId, String commentId, DataCallback<Boolean> callback);
+    void toggleCommentLike(String postId, String commentId, DataCallback<Boolean> callback);
 
     void hasLikedComment(String postId, String commentId, DataCallback<Boolean> callback);
 

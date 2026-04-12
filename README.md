@@ -1,82 +1,153 @@
 # MindEase
 
-MindEase is an Android app for university students that combines a mood diary, lightweight emotional support, trend analysis, and an anonymous community experience. The product is designed around the core flow of `record -> analyze -> suggest -> share`, with a strong focus on low-pressure interaction, privacy, and local-first usability.
+MindEase is an Android app for university students focused on low-pressure emotional check-ins, trend awareness, lightweight support, and anonymous community expression. The current project already delivers a working MVP around the flow `record -> analyze -> suggest -> chat -> share`.
 
-This repository currently implements an MVP in Android Studio with Java and XML. Based on the PRD and technical design documents, the goal is not medical diagnosis. MindEase is positioned as a daily emotional companion tool that helps users build awareness of their mood patterns and access simple, supportive guidance.
+This project is built with Android Studio, Java, XML, Room, Firestore, and an OpenAI-compatible agent integration path. It is a course/project-style product prototype, not a medical product, and it does not replace professional psychological support or diagnosis.
 
-## Product Goals
+## Overview
 
-- Make daily mood check-ins fast and easy
-- Help users understand mood trends through charts and calendar views
-- Provide rule-based analysis with a path to future AI integration
-- Offer a safe anonymous space for expression
-- Keep core diary features available in offline or unstable-network scenarios
+MindEase currently includes:
 
-## Current Project Status
+- Onboarding, authentication, and session-based app entry flow
+- Daily mood recording with mood type, intensity, diary text, and tags
+- Mood record create, edit, delete, and recent-record retrieval
+- Weekly and monthly mood analysis with charts
+- Calendar-based mood review
+- Rule-based personalized suggestions
+- Therapy-style Agent chat with prompt context injection and fallback replies
+- Anonymous community with post creation, browsing, filtering, likes, comments, replies, and delete-your-own content actions
 
-According to [docs/PRD.md](/e:/hku/smartphone/MindEase/docs/PRD.md), [docs/TECHNICAL_DESIGN.md](/e:/hku/smartphone/MindEase/docs/TECHNICAL_DESIGN.md), and [docs/BOARD.md](/e:/hku/smartphone/MindEase/docs/BOARD.md), the current codebase already covers the main MVP flow:
+## Current Features
 
-- App flow: `Splash -> Onboarding -> Auth -> Main`
-- Main navigation: Home, Analysis, Calendar, Community, Profile
-- Mood record flow: create, edit, delete, and recent record retrieval
-- Analysis flow: rule-based analysis, trend charts, and AI-fallback support
-- Calendar flow: monthly overview and per-day detail lookup
-- Suggestion flow: lightweight self-help suggestions based on recent records
-- Anonymous community flow: create post, browse feed, open details, basic moderation, anonymous identity mapping
-- Local persistence: Room entities, DAOs, database entry point, and mood record persistence path
-- Unit tests for core use cases, repository behavior, sentiment rules, and AI fallback logic
+### 1. Account and app flow
 
-The following parts are still pending, partial, or placeholder-only:
+- `SplashActivity` checks onboarding and login state
+- `OnboardingActivity` introduces the product direction
+- `AuthActivity` supports register/login flow for the MVP
+- `MainActivity` hosts the five-tab bottom navigation
 
-- Real remote AI integration
-- Firestore or other cloud-backed community storage
-- Comments, reports, and more advanced moderation features
-- UI automation tests and fuller database integration coverage
+### 2. Mood diary
 
-## Core Features
+- Create a mood record with:
+  - mood type
+  - intensity
+  - diary text
+  - emotion tags
+- Edit existing records
+- Delete existing records
+- Review recent records from the home flow
 
-### Daily Mood Check-In
+### 3. Analysis and suggestions
 
-- Choose mood type and intensity
-- Write diary text
-- Attach mood-related tags
-- Edit, delete, and review recent records
+- Weekly and monthly mood trends
+- Chart-based summaries using `MPAndroidChart`
+- Rule-based sentiment analysis
+- AI-summary extension point with graceful fallback
+- Personalized suggestions generated from recent mood data
 
-### Mood Analysis and Suggestions
+### 4. Calendar review
 
-- Rule-based sentiment and trend analysis
-- Weekly and monthly visual summaries
-- Short, non-medical support suggestions
-- Extension points for future AI-generated analysis
+- Calendar-style overview of recorded mood days
+- Tap a date to inspect that day's entries
 
-### Mood Calendar
+### 5. Therapy Agent
 
-- Calendar-based view of daily mood states
-- Tap a date to inspect that day's records
+- Dedicated chat screen
+- Prompt context built from recent mood records, trends, and suggestions
+- OpenAI-compatible remote API integration path
+- Local fallback reply when remote generation fails
+- Basic risk guidance support
 
-### Anonymous Community
+### 6. Anonymous community
 
-- Publish anonymous emotional posts
-- Browse a lightweight community feed
+- Create anonymous posts with emotion tags
+- Browse community feed
+- Filter posts by tag
+- Like posts
 - Open post details
-- Apply basic content moderation and anonymous naming
+- Add comments and replies
+- Delete your own post
+- Delete your own comment when it has no child replies
+- Firestore-backed post/comment/like storage
+- Anonymous identity mapping plus basic content moderation
+
+## Screens
+
+Main app screens:
+
+- `SplashActivity`
+- `OnboardingActivity`
+- `AuthActivity`
+- `MainActivity`
+- `MoodEditorActivity`
+- `AgentChatActivity`
+- `PostEditorActivity`
+- `PostDetailActivity`
+- `SettingsActivity`
+
+Main tabs:
+
+- `HomeFragment`
+- `AnalysisFragment`
+- `CalendarFragment`
+- `CommunityFragment`
+- `ProfileFragment`
+
+## Screenshot Showcase
+
+You can fill this section with your own screenshots later. A clean way is to create a folder like `docs/screenshots/` and place exported images there.
+
+Recommended section structure:
+
+```md
+## Screenshots
+
+### Splash / Onboarding
+![Splash screen](docs/screenshots/splash.png)
+Brief note about first-launch experience.
+
+### Mood Editor
+![Mood editor](docs/screenshots/mood-editor.png)
+Brief note about mood recording flow.
+
+### Analysis
+![Analysis page](docs/screenshots/analysis.png)
+Brief note about weekly/monthly charts.
+
+### Calendar
+![Calendar page](docs/screenshots/calendar.png)
+Brief note about date-based review.
+
+### Agent Chat
+![Agent chat](docs/screenshots/agent-chat.png)
+Brief note about contextual emotional support.
+
+### Community Feed
+![Community feed](docs/screenshots/community-feed.png)
+Brief note about anonymous posting and browsing.
+
+### Community Detail
+![Post detail](docs/screenshots/post-detail.png)
+Brief note about comments, replies, and delete-your-own actions.
+
+### Profile / Settings
+![Profile page](docs/screenshots/profile.png)
+Brief note about anonymous name and privacy settings.
+```
+
+If you want placeholders directly in this README, replace this section with your screenshots using the same format.
 
 ## Tech Stack
 
-- Language: Java 11
-- UI: Android XML
-- Architecture: MVVM + Repository + UseCase + Service
-- Local storage: Room
-- Charts: MPAndroidChart
-- Build system: Gradle Kotlin DSL
-- Minimum Android version: `minSdk 24`
-- Target Android version: `targetSdk 36`
-
-The implementation follows the same technical principles defined in the design documents:
-
-- Local-first: core record and analysis features should remain usable without a backend
-- Privacy-first: diary data is private by default, and community identity is anonymized
-- Extensible: rule-based behavior lands first, while cloud and AI capabilities can be added later
+- Language: `Java 11`
+- UI: `Android XML` + `Material Components`
+- Architecture: `MVVM + Repository + UseCase + Service`
+- Local storage: `Room`
+- Community backend: `Firebase Firestore`
+- Charts: `MPAndroidChart`
+- Build: `Gradle Kotlin DSL`
+- Min SDK: `24`
+- Target SDK: `36`
 
 ## Project Structure
 
@@ -85,35 +156,17 @@ MindEase/
 |-- app/
 |   `-- src/
 |       |-- main/java/com/mindease/
-|       |   |-- app/        # app entry point and dependency container
-|       |   |-- common/     # shared UI state, events, session handling
-|       |   |-- data/       # Room, entities, DAOs, repository implementations
-|       |   |-- domain/     # models, repository contracts, use cases, services
-|       |   `-- feature/    # screens and view models
-|       |-- main/res/       # XML layouts, themes, menus, resources
+|       |   |-- app/        # app bootstrap and dependency container
+|       |   |-- common/     # shared session, result, and utility code
+|       |   |-- data/       # Room, Firestore, repositories, data sources
+|       |   |-- domain/     # models, repository contracts, services, use cases
+|       |   `-- feature/    # UI screens, fragments, view models, adapters
+|       |-- main/res/       # layouts, drawables, values, menus
 |       `-- test/           # unit tests
-|-- docs/                   # PRD, technical design, board, task notes
+|-- docs/                   # PRD, technical design, board, and notes
 |-- gradle/
 `-- README.md
 ```
-
-## Main Screens
-
-- `SplashActivity`
-- `OnboardingActivity`
-- `AuthActivity`
-- `MainActivity`
-- `MoodEditorActivity`
-- `PostEditorActivity`
-- `PostDetailActivity`
-
-Main fragments:
-
-- `HomeFragment`
-- `AnalysisFragment`
-- `CalendarFragment`
-- `CommunityFragment`
-- `ProfileFragment`
 
 ## Getting Started
 
@@ -122,15 +175,27 @@ Main fragments:
 - Android Studio
 - JDK 11
 - Android SDK installed locally
+- Firebase configuration if you want the community module to talk to Firestore
 
-### Run In Android Studio
+### Open in Android Studio
 
 1. Open the repository root in Android Studio.
 2. Wait for Gradle sync to finish.
 3. Make sure `local.properties` points to a valid Android SDK.
-4. Run the `app` module on an emulator or device.
+4. If needed, provide the Firebase config used by this project.
+5. Run the `app` module on an emulator or physical device.
 
-### Command Line Build
+### Optional Agent configuration
+
+The Agent chat reads these Gradle properties:
+
+- `mindease.chat.baseUrl`
+- `mindease.chat.apiKey`
+- `mindease.chat.model`
+
+If they are missing, the build still works, but remote Agent replies may not be available.
+
+### Command line build
 
 ```powershell
 .\gradlew.bat assembleDebug
@@ -138,29 +203,46 @@ Main fragments:
 
 ## Testing
 
-The repository already includes unit tests for key business flows and analysis logic.
-
-Run tests from the command line:
+Run unit tests:
 
 ```powershell
 .\gradlew.bat test
 ```
 
+Recent validation used during development:
+
+```powershell
+.\gradlew.bat assembleDebug
+```
+
 ## Documentation
 
-- Product requirements: [docs/PRD.md](/e:/hku/smartphone/MindEase/docs/PRD.md)
-- Technical design: [docs/TECHNICAL_DESIGN.md](/e:/hku/smartphone/MindEase/docs/TECHNICAL_DESIGN.md)
-- Development board: [docs/BOARD.md](/e:/hku/smartphone/MindEase/docs/BOARD.md)
-- Course task notes: [docs/TASK.md](/e:/hku/smartphone/MindEase/docs/TASK.md)
+- [PRD](docs/PRD.md)
+- [Technical Design](docs/TECHNICAL_DESIGN.md)
+- [Development Board](docs/BOARD.md)
+- [Task Notes](docs/TASK.md)
 
-## Planned Next Steps
+## Suggested Demo Flow
 
-- Integrate a real AI analysis and suggestion service
-- Add Firestore or another backend for community sync
-- Expand moderation and community interaction features
-- Improve Room integration testing and UI automation coverage
-- Continue polishing UI states, empty states, and edge-case handling
+If you need to demo the app in class or in a project review, this order works well:
+
+1. Launch flow: `Splash -> Onboarding -> Auth`
+2. Create a mood record
+3. Show analysis and calendar updates
+4. Open Agent chat and send one message
+5. Enter the anonymous community
+6. Create a post, open detail, comment/reply, and show delete-your-own behavior
+7. End on profile/settings to show privacy-related controls
+
+## Known Gaps
+
+The current app is already functional, but some areas are still iterative:
+
+- Community reporting and advanced moderation are not finished
+- Agent session list/history management is still limited
+- Remote agent integration still depends on actual endpoint configuration
+- UI automation coverage is still incomplete
 
 ## Scope Note
 
-MindEase is an MVP-oriented student project focused on product completeness, architecture clarity, and future extensibility. It is not a medical product and does not replace professional psychological support or diagnosis.
+MindEase is a supportive emotional wellness app prototype for coursework and product demonstration. It is not a medical system and should not be presented as clinical diagnosis or treatment software.

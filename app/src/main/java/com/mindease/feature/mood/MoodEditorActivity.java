@@ -1,32 +1,33 @@
 package com.mindease.feature.mood;
 
-import android.text.TextUtils;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.ViewGroup;
+import android.text.TextUtils;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.mindease.R;
 import com.mindease.app.AppContainer;
 import com.mindease.app.MindEaseApp;
+import com.mindease.common.ui.WindowInsetsHelper;
 import com.mindease.domain.model.MoodRecord;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class MoodEditorActivity extends AppCompatActivity {
+    public static final String EXTRA_RECORD_ID = "record_id";
+
     private MoodEditorViewModel viewModel;
     private AppContainer container;
     private ChipGroup moodGroup;
@@ -35,16 +36,18 @@ public class MoodEditorActivity extends AppCompatActivity {
     private TextInputEditText customMoodEditText;
     private android.widget.SeekBar intensitySeek;
     private TextView intensityValueText;
-    private ListView recentListView;
+    private MaterialButton saveButton;
+    private MaterialButton updateButton;
+    private MaterialButton deleteButton;
     private MoodRecord selectedRecord;
-    private final List<MoodRecord> recentRecords = new ArrayList<>();
-    private final List<String> recentRecordLabels = new ArrayList<>();
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd HH:mm", Locale.US);
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        WindowInsetsHelper.enableEdgeToEdge(this);
         setContentView(R.layout.activity_mood_editor);
+        View root = findViewById(R.id.root_mood_editor);
+        WindowInsetsHelper.applyTopAndBottomPadding(root);
 
         viewModel = new ViewModelProvider(this).get(MoodEditorViewModel.class);
         container = ((MindEaseApp) getApplication()).getAppContainer();
@@ -54,20 +57,15 @@ public class MoodEditorActivity extends AppCompatActivity {
         customMoodEditText = findViewById(R.id.et_custom_mood);
         intensitySeek = findViewById(R.id.seek_intensity);
         intensityValueText = findViewById(R.id.tv_intensity_value);
-        recentListView = findViewById(R.id.lv_recent_records);
-        MaterialButton saveButton = findViewById(R.id.btn_save_mood);
-        MaterialButton updateButton = findViewById(R.id.btn_update_mood);
-        MaterialButton deleteButton = findViewById(R.id.btn_delete_mood);
-        MaterialButton clearSelectionButton = findViewById(R.id.btn_clear_selection);
+        saveButton = findViewById(R.id.btn_save_mood);
+        updateButton = findViewById(R.id.btn_update_mood);
+        deleteButton = findViewById(R.id.btn_delete_mood);
         MaterialButton addCustomMoodButton = findViewById(R.id.btn_add_custom_mood);
 
         saveButton.setOnClickListener(v -> createRecord());
         updateButton.setOnClickListener(v -> updateSelectedRecord());
         deleteButton.setOnClickListener(v -> deleteSelectedRecord());
-        clearSelectionButton.setOnClickListener(v -> clearSelection());
         addCustomMoodButton.setOnClickListener(v -> addCustomMoodFromInput());
-
-        recentListView.setOnItemClickListener((parent, view, position, id) -> selectRecord(position));
         intensitySeek.setOnSeekBarChangeListener(new android.widget.SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(android.widget.SeekBar seekBar, int progress, boolean fromUser) {
@@ -83,12 +81,38 @@ public class MoodEditorActivity extends AppCompatActivity {
             }
         });
         updateIntensityLabel(getSelectedIntensity());
+        loadEditorMode();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        reloadRecentRecords();
+    private void loadEditorMode() {
+        String recordId = getIntent().getStringExtra(EXTRA_RECORD_ID);
+        if (TextUtils.isEmpty(recordId)) {
+            showCreateMode();
+            return;
+        }
+
+        for (MoodRecord record : viewModel.loadRecent(container)) {
+            if (recordId.equals(record.id)) {
+                selectedRecord = record;
+                applySelectionToForm(record);
+                showEditMode();
+                return;
+            }
+        }
+        showCreateMode();
+    }
+
+    private void showCreateMode() {
+        selectedRecord = null;
+        saveButton.setVisibility(View.VISIBLE);
+        updateButton.setVisibility(View.GONE);
+        deleteButton.setVisibility(View.GONE);
+    }
+
+    private void showEditMode() {
+        saveButton.setVisibility(View.GONE);
+        updateButton.setVisibility(View.VISIBLE);
+        deleteButton.setVisibility(View.VISIBLE);
     }
 
     private void createRecord() {
@@ -100,13 +124,13 @@ public class MoodEditorActivity extends AppCompatActivity {
         );
         viewModel.createRecord(container, record);
         Toast.makeText(this, R.string.msg_mood_saved, Toast.LENGTH_SHORT).show();
-        clearForm();
-        reloadRecentRecords();
+        setResult(RESULT_OK, new Intent());
+        finish();
     }
 
     private void updateSelectedRecord() {
         if (selectedRecord == null) {
-            Toast.makeText(this, "Select a record to update", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No mood record selected", Toast.LENGTH_SHORT).show();
             return;
         }
         MoodRecord updated = new MoodRecord(
@@ -119,60 +143,19 @@ public class MoodEditorActivity extends AppCompatActivity {
         );
         viewModel.updateRecord(container, updated);
         Toast.makeText(this, "Record updated", Toast.LENGTH_SHORT).show();
-        clearSelection();
-        reloadRecentRecords();
+        setResult(RESULT_OK, new Intent());
+        finish();
     }
 
     private void deleteSelectedRecord() {
         if (selectedRecord == null) {
-            Toast.makeText(this, "Select a record to delete", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No mood record selected", Toast.LENGTH_SHORT).show();
             return;
         }
         viewModel.deleteRecord(container, selectedRecord.id);
         Toast.makeText(this, "Record deleted", Toast.LENGTH_SHORT).show();
-        clearSelection();
-        reloadRecentRecords();
-    }
-
-    private void reloadRecentRecords() {
-        recentRecords.clear();
-        recentRecords.addAll(viewModel.loadRecent(container));
-        recentRecordLabels.clear();
-        for (MoodRecord record : recentRecords) {
-            recentRecordLabels.add(
-                    dateFormat.format(record.createdAt)
-                            + " | " + record.moodType
-                            + " (" + record.moodIntensity + ")"
-                            + " | " + preview(record.diaryText)
-            );
-        }
-        recentListView.setAdapter(
-                new ArrayAdapter<>(this, android.R.layout.simple_list_item_activated_1, recentRecordLabels)
-        );
-    }
-
-    private void selectRecord(int position) {
-        if (position < 0 || position >= recentRecords.size()) {
-            return;
-        }
-        selectedRecord = recentRecords.get(position);
-        applySelectionToForm(selectedRecord);
-        recentListView.setItemChecked(position, true);
-    }
-
-    private void clearSelection() {
-        selectedRecord = null;
-        recentListView.clearChoices();
-        clearForm();
-    }
-
-    private void clearForm() {
-        intensitySeek.setProgress(2);
-        diaryEditText.setText("");
-        customMoodEditText.setText("");
-        clearChipChecks(moodGroup);
-        clearChipChecks(tagsGroup);
-        updateIntensityLabel(getSelectedIntensity());
+        setResult(RESULT_OK, new Intent());
+        finish();
     }
 
     private void applySelectionToForm(MoodRecord record) {
@@ -215,14 +198,6 @@ public class MoodEditorActivity extends AppCompatActivity {
         if (!matched && chipGroup == moodGroup && !TextUtils.isEmpty(text)) {
             addMoodChipIfMissing(text, true);
         }
-    }
-
-    private String preview(String diaryText) {
-        if (diaryText == null || diaryText.trim().isEmpty()) {
-            return "No notes";
-        }
-        String trimmed = diaryText.trim();
-        return trimmed.length() <= 28 ? trimmed : trimmed.substring(0, 28) + "...";
     }
 
     private String getDiaryText() {
@@ -306,6 +281,6 @@ public class MoodEditorActivity extends AppCompatActivity {
     }
 
     private void updateIntensityLabel(int intensity) {
-        intensityValueText.setText("Intensity: " + intensity + "/5");
+        intensityValueText.setText("Intensity " + intensity + "/5");
     }
 }

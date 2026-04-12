@@ -25,13 +25,14 @@ public class PostEditorActivity extends AppCompatActivity {
         CommunityViewModel viewModel = new ViewModelProvider(this).get(CommunityViewModel.class);
         ChipGroup chipGroup = findViewById(R.id.chip_group_post_tag);
         TextInputEditText contentEditText = findViewById(R.id.et_post_content);
+        TextInputEditText customTagEditText = findViewById(R.id.et_post_custom_tag);
         findViewById(R.id.btn_publish_post).setOnClickListener(v -> {
             String content = contentEditText.getText() == null ? "" : contentEditText.getText().toString().trim();
             if (content.isEmpty()) {
                 Toast.makeText(this, "Please enter post content", Toast.LENGTH_SHORT).show();
                 return;
             }
-            String tag = selectedTag(chipGroup);
+            String tag = selectedTag(chipGroup, customTagEditText);
             AppContainer container = ((MindEaseApp) getApplication()).getAppContainer();
             v.setEnabled(false);
             viewModel.createPost(container, content, tag, new DataCallback<CommunityPost>() {
@@ -50,7 +51,13 @@ public class PostEditorActivity extends AppCompatActivity {
         });
     }
 
-    private String selectedTag(ChipGroup chipGroup) {
+    private String selectedTag(ChipGroup chipGroup, TextInputEditText customTagEditText) {
+        String customTag = customTagEditText.getText() == null
+                ? ""
+                : customTagEditText.getText().toString().trim();
+        if (!customTag.isEmpty()) {
+            return customTag;
+        }
         int checkedId = chipGroup.getCheckedChipId();
         if (checkedId == -1) {
             return "Stress";
