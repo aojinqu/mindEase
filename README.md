@@ -71,35 +71,7 @@ MindEase currently includes:
 - Firestore-backed post/comment/like storage
 - Anonymous identity mapping plus basic content moderation
 
-## Screens
 
-Main app screens:
-
-- `SplashActivity`
-- `OnboardingActivity`
-- `AuthActivity`
-- `MainActivity`
-- `MoodEditorActivity`
-- `AgentChatActivity`
-- `PostEditorActivity`
-- `PostDetailActivity`
-- `SettingsActivity`
-
-Main tabs:
-
-- `HomeFragment`
-- `AnalysisFragment`
-- `CalendarFragment`
-- `CommunityFragment`
-- `ProfileFragment`
-
-## Screenshot Showcase
-
-You can fill this section with your own screenshots later. A clean way is to create a folder like `docs/screenshots/` and place exported images there.
-
-Recommended section structure:
-
-```md
 ## Screenshots
 
 ### Splash / Onboarding
@@ -108,15 +80,13 @@ Brief note about first-launch experience.
 
 ### Mood Editor
 ![Mood editor](docs/screenshots/mood-editor.png)
+![Mood editor](docs/screenshots/mood-editor2.png)
 Brief note about mood recording flow.
 
 ### Analysis
 ![Analysis page](docs/screenshots/analysis.png)
+![Analysis page](docs/screenshots/analysis2.png)
 Brief note about weekly/monthly charts.
-
-### Calendar
-![Calendar page](docs/screenshots/calendar.png)
-Brief note about date-based review.
 
 ### Agent Chat
 ![Agent chat](docs/screenshots/agent-chat.png)
@@ -133,9 +103,8 @@ Brief note about comments, replies, and delete-your-own actions.
 ### Profile / Settings
 ![Profile page](docs/screenshots/profile.png)
 Brief note about anonymous name and privacy settings.
-```
 
-If you want placeholders directly in this README, replace this section with your screenshots using the same format.
+
 
 ## Tech Stack
 
