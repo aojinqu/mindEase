@@ -285,7 +285,7 @@ public class AnalysisFragment extends Fragment {
     }
 
     private void addRecordToBucket(Bucket bucket, MoodRecord record) {
-        String label = analyzer.analyzeLabel(record.diaryText, record.moodIntensity);
+        String label = analyzer.analyzeLabel(record.moodType, record.diaryText, record.moodIntensity);
         if ("positive".equals(label)) {
             bucket.positiveCount++;
         } else if ("negative".equals(label)) {

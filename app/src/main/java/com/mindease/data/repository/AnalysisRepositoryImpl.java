@@ -39,7 +39,7 @@ public class AnalysisRepositoryImpl implements AnalysisRepository {
         Map<String, Integer> tagFrequency = new HashMap<>();
 
         for (MoodRecord record : records) {
-            String label = analyzer.analyzeLabel(record.diaryText, record.moodIntensity);
+            String label = analyzer.analyzeLabel(record.moodType, record.diaryText, record.moodIntensity);
             if ("positive".equals(label)) {
                 positive++;
             } else if ("negative".equals(label)) {

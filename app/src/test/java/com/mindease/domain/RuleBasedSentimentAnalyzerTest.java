@@ -29,4 +29,25 @@ public class RuleBasedSentimentAnalyzerTest {
         float score = analyzer.analyzeScore("", 5);
         assertTrue(score > 0f);
     }
+
+    @Test
+    public void analyzeLabel_happyMoodType_shouldBePositive() {
+        RuleBasedSentimentAnalyzer analyzer = new RuleBasedSentimentAnalyzer();
+        String label = analyzer.analyzeLabel("Happy", "", 3);
+        assertEquals("positive", label);
+    }
+
+    @Test
+    public void analyzeLabel_anxiousMoodType_shouldBeNegative() {
+        RuleBasedSentimentAnalyzer analyzer = new RuleBasedSentimentAnalyzer();
+        String label = analyzer.analyzeLabel("Anxious", "", 3);
+        assertEquals("negative", label);
+    }
+
+    @Test
+    public void analyzeLabel_calmMoodType_shouldBeNeutral() {
+        RuleBasedSentimentAnalyzer analyzer = new RuleBasedSentimentAnalyzer();
+        String label = analyzer.analyzeLabel("Calm", "", 3);
+        assertEquals("neutral", label);
+    }
 }
