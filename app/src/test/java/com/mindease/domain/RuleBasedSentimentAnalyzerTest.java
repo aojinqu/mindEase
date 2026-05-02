@@ -50,4 +50,15 @@ public class RuleBasedSentimentAnalyzerTest {
         String label = analyzer.analyzeLabel("Calm", "", 3);
         assertEquals("neutral", label);
     }
+
+    @Test
+    public void analyzeLabel_synonymMoodTypes_shouldBeMapped() {
+        RuleBasedSentimentAnalyzer analyzer = new RuleBasedSentimentAnalyzer();
+
+        assertEquals("positive", analyzer.analyzeLabel("Cheerful", "", 3));
+        assertEquals("positive", analyzer.analyzeLabel("Peaceful", "", 3));
+        assertEquals("neutral", analyzer.analyzeLabel("Balanced", "", 3));
+        assertEquals("negative", analyzer.analyzeLabel("Overwhelmed", "", 3));
+        assertEquals("negative", analyzer.analyzeLabel("Worried", "", 3));
+    }
 }

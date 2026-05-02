@@ -7,16 +7,18 @@ import java.util.Set;
 
 public class RuleBasedSentimentAnalyzer {
     private static final Set<String> POSITIVE_MOODS = new HashSet<>(Arrays.asList(
-        "happy", "joyful", "excited", "grateful", "relaxed", "hopeful", "good", "great"
+        "happy", "joyful", "excited", "grateful", "relaxed", "hopeful", "good", "great",
+        "cheerful", "content", "delighted", "peaceful", "smiling"
     ));
 
     private static final Set<String> NEUTRAL_MOODS = new HashSet<>(Arrays.asList(
-        "calm", "neutral", "steady", "fine", "okay", "ok"
+        "calm", "neutral", "steady", "fine", "okay", "ok", "okayish", "balanced", "okayy"
     ));
 
     private static final Set<String> NEGATIVE_MOODS = new HashSet<>(Arrays.asList(
         "sad", "anxious", "anxiety", "angry", "stress", "stressed", "tired",
-        "lonely", "bad", "upset", "down", "nervous", "mad", "unhappy"
+        "lonely", "bad", "upset", "down", "nervous", "mad", "unhappy",
+        "worried", "frustrated", "overwhelmed", "depressed", "hurt"
     ));
 
     private static final Set<String> POSITIVE_KEYWORDS = new HashSet<>(Arrays.asList(

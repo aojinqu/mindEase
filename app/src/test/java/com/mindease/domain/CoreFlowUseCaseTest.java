@@ -53,8 +53,38 @@ public class CoreFlowUseCaseTest {
         assertEquals(suggestion.id, suggestionRepository.latest().id);
     }
 
+    @Test
+    public void analyzeReport_shouldClassifyMoodTypesByMappingTable() {
+        long now = 2_000_000L;
+        MoodRepositoryImpl moodRepository = new MoodRepositoryImpl(new FixedTimeProvider(now));
+        AnalysisRepositoryImpl analysisRepository = new AnalysisRepositoryImpl(
+                moodRepository,
+                new RuleBasedSentimentAnalyzer()
+        );
+
+        CreateMoodRecordUseCase createMoodRecordUseCase = new CreateMoodRecordUseCase(moodRepository);
+        createMoodRecordUseCase.execute(record("r1", "Happy", 3, "", now - daysToMillis(1), "study"));
+        createMoodRecordUseCase.execute(record("r2", "Calm", 3, "", now - daysToMillis(1), "sleep"));
+        createMoodRecordUseCase.execute(record("r3", "Anxious", 3, "", now - daysToMillis(1), "exam"));
+        createMoodRecordUseCase.execute(record("r4", "Overwhelmed", 3, "", now - daysToMillis(1), "exam"));
+
+        AnalysisReport report = new GenerateMoodAnalysisUseCase(analysisRepository).execute(7);
+
+        assertEquals(4, report.totalCount);
+        assertEquals(1, report.positiveCount);
+        assertEquals(1, report.neutralCount);
+        assertEquals(2, report.negativeCount);
+        assertTrue(report.summaryText.contains("1 positive"));
+        assertTrue(report.summaryText.contains("1 neutral"));
+        assertTrue(report.summaryText.contains("2 negative"));
+    }
+
     private MoodRecord record(String id, int intensity, String text, long createdAt, String tag) {
         return new MoodRecord(id, "mood", intensity, text, Arrays.asList(tag), createdAt);
+    }
+
+    private MoodRecord record(String id, String moodType, int intensity, String text, long createdAt, String tag) {
+        return new MoodRecord(id, moodType, intensity, text, Arrays.asList(tag), createdAt);
     }
 
     private long daysToMillis(int days) {
