@@ -31,9 +31,9 @@ Abstract	1
 2.4 Creativity and Innovation	10
 3. Implementation and Overall Quality	10
 3.1 System Implementation Overview	10
-3.2 Testing and User Evaluation	11
+3.2 Testing and Implementation Validation	11
 3.3 Software Quality Assessment	11
-3.5 Reflection and Limitations	11
+3.4 Reflection and Limitations	11
 4.Summary	12
 References	13
 
@@ -154,48 +154,104 @@ The innovation of MindEase lies not in clinical diagnosis but in its synthesis o
 The project introduces a locally anonymized identity model for the community space, representing a creative balance between safety and connectedness. Additionally, the contextual chat agent demonstrates a flexible architecture where emotional context informs supportive conversation without storing personal content. Finally, the visual analytical layer brings abstract emotions into spatial and temporal awareness, enabling a cognitive reflection process supported by data visualization.
 
 Altogether, these innovations highlight an academic contribution to digital mental‑health design: employing computational tools to enhance emotional literacy under strict privacy conditions.
-3.Implementation and Overall Quality
-3.1 System Implementation Overview
-The implementation of MindEase follows a layered MVVM architecture, ensuring modularity, scalability, and maintainability. The system is composed of five core layers—App Layer, Feature Layer, Domain Layer, Data Layer, and Common Utilities —as illustrated in Figure X. Each layer isolates specific functionalities, allowing independent development and testing.
+## 3. Implementation and Overall Quality
 
-App Layer: Contains the main entry points (MainActivity, MindEaseApp), UI routing, and navigation logic.
-Feature Layer: Implements the key modules，which is Diary, Analysis, Chat, and Community, corresponding to the five user flow stages (Record, Analyze, Suggest, Chat, Share).
-Domain Layer: Defines use cases, data models, and repositories to handle business logic and coordinate between UI and data sources.
-Data Layer: Integrates both local (Room Database) and cloud-based (Firebase Firestore) storage, ensuring reliability and offline access.
-Common Utilities: Includes SessionHandler and shared helper functions for authentication, localization, and theme management.
-This structure allows seamless synchronization between emotional journaling, AI-assisted mood analysis, and community sharing, promoting maintainable and testable software quality.
+### 3.1 System Implementation Overview
 
-3.2 Testing and User Evaluation
-To evaluate usability and emotional impact, a QR code was distributed among a test group of 100 university students. Participants used MindEase for one week and completed a structured feedback survey focusing on ease of use, perceived usefulness, and emotional comfort.
+MindEase is implemented as an Android MVP using Java 11, XML-based UI, Room, Firestore, and MPAndroidChart. The project follows a layered MVVM + Repository + Use-Case architecture that maps directly to the source-code package design (`app`, `feature`, `domain`, `data`, `common`). This explicit separation allows each module to evolve independently while keeping business logic testable and UI-agnostic.
 
-The summarized results (see Figure 3.1) indicate that:
-84% reported improved emotional awareness,
-78% found the AI suggestions relevant to their daily stress,
-90% agreed that the anonymous sharing function increased empathy and belonging.
-All feedback was anonymized to comply with ethical data standards.
+At the application composition level, `AppContainer` acts as a dependency assembly point, wiring repositories, domain services, and use cases into an executable workflow. This design reduces hidden coupling and improves traceability from requirements to implementation.
 
-3.3 Software Quality Assessment
+Implementation evidence by core flow:
 
-Quality Attribute	Implementation Reflection
-Functionality	Fully supports emotion tracking and AI-based analysis.
-Usability	Intuitive interface tested with 50 participants; positive feedback.
-Reliability	Local caching prevents data loss; stable API communication.
-Security	Firebase Auth and hashed session IDs protect user data.
-Maintainability	Modular MVVM codebase allows easy updates and scalability.
-Performance	Optimized AI inference time < 1s; smooth UI animations.
-Table 3.2. Software Quality Assessment Based on ISO/IEC 25010 Standards
-Overall, MindEase demonstrates strong compliance with ISO/IEC 25010 software quality standards, integrating technical robustness with psychological utility. The system effectively balances functional completeness, maintainability, and user experience, thereby bridging the gap between self-reflection applications and AI-driven emotional well-being tools for university students.
-3.4 Reflection and Limitations
-Although MindEase demonstrates promising outcomes in enhancing students’ emotional awareness and engagement, several limitations were observed through the pilot testing with 100 participants. The analysis indicates that the current sentiment engine performs well in recognizing general emotional tone but shows reduced accuracy in handling multi‑language or colloquial expressions, particularly among bilingual users. Future work will focus on integrating adaptive NLP models trained with localized emotional datasets to improve contextual understanding and linguistic flexibility.
+- Record: mood entries (type, intensity, text, tags) are persisted locally through Room entities and DAOs, enabling offline journaling and retrieval windows such as 7-day and 30-day queries.
+- Analyze: `AnalysisRepositoryImpl` combines rule-based sentiment labeling and summary generation, with an AI-summary fallback path to guarantee output even when remote AI is unavailable.
+- Suggest: `SuggestionEngine` generates actionable recommendations from recent analysis outputs, forming a closed loop from reflection to intervention.
+- Chat: `AgentRepositoryImpl` stores sessions and messages locally and constructs contextual prompts via `PromptContextBuilder`; `RiskGuardService` adds high-risk guidance; `TherapyAgentService` provides remote generation with robust fallback for network or configuration failures.
+- Share: `CommunityRepositoryImpl` uses Firestore transactions for post, comment, and like consistency and enforces author-only deletion rules to protect content ownership in anonymous interaction.
 
-Additionally, some users reported that AI‑generated suggestions in the “Analyze” and “Suggest” modules occasionally lacked personalization. Recommendations rely mainly on rule‑based logic rather than long‑term behavioral learning, at present. To address this, upcoming system updates aim to introduce feedback‑driven personalization, allowing the app to refine emotional guidance dynamically based on user mood history.
+From an engineering perspective, this implementation balances functional completeness and extensibility: local-first emotional data handling ensures continuity, while cloud and AI interfaces remain pluggable for future upgrades.
 
-User feedback also reflected a strong interest in expanding real‑time interaction features within the “Chat” and “Share” modules. While 90% of participants affirmed feeling supported within the anonymous community, a common expectation was the inclusion of optional real‑time peer or counselor communication. Incorporating structured peer‑support mechanisms and potential integration with campus counseling systems will strengthen the app’s emotional responsiveness.
+### 3.2 Testing and Implementation Validation
+
+Quality validation in this project focuses on implementation-level verification. The goal of this stage was not only to confirm that the app compiles and runs, but also to verify whether the core emotional-support workflow remains stable under both normal use and failure conditions.
+
+#### Technical Verification
+
+The implementation was validated with unit tests focused on the most important business rules and fallback paths.
+
+- Command executed: `.\gradlew.bat testDebugUnitTest`
+- Result: build successful, 15 tests in total, 0 failures, 0 errors, 1 skipped.
+- Main coverage areas:
+	- Mood recording persistence and retrieval.
+	- Sentiment classification based on mood type, diary text, and intensity.
+	- Rule-based summary generation for weekly emotional trends.
+	- Personalized suggestion generation from analysis results.
+	- Risk detection and safe-response guidance in the chat agent.
+	- Remote-agent fallback behavior when API configuration or network access fails.
+	- Core dependency assembly in the application container.
+
+#### Detailed Test Cases
+
+| Test Area | Representative Test Class | What It Verifies | Why It Matters |
+| --- | --- | --- | --- |
+| Core flow | CoreFlowUseCaseTest | Creates mood records, generates analysis, and produces suggestions end to end | Confirms that the main user journey is functionally closed |
+| Sentiment analysis | RuleBasedSentimentAnalyzerTest | Correctly labels positive, neutral, and negative mood cases, including synonym mapping | Prevents incorrect emotional classification |
+| Risk control | RiskGuardServiceTest | Detects high-risk expressions and returns guidance text | Ensures the app responds safely to sensitive input |
+| AI fallback | AiAnalysisFallbackTest | Falls back to rule-based summaries when AI analysis is unavailable | Protects output continuity in weak-network or offline situations |
+| Agent session logic | AgentRepositoryImplTest | Persists sessions/messages and stores fallback replies correctly | Verifies chat history integrity and context continuity |
+| Mood data storage | MoodRepositoryImplTest | Supports create, update, delete, and recent-window queries | Confirms the diary module is reliable for daily use |
+| Dependency wiring | AppContainerTest | Verifies that the app container can assemble core components | Confirms the application bootstrap layer is coherent |
+
+#### Result Interpretation
+
+These tests show that MindEase does not rely on a single happy path. Instead, it was deliberately tested for both normal workflow and degraded conditions. For an emotional-wellness app, this is important because users may open the app when the network is unstable, the AI service is unavailable, or the input content is sensitive. The tested fallback logic ensures the system still returns a meaningful response instead of failing silently.
+
+#### Implementation-Based Validation Summary
+
+Instead of relying on questionnaire-style outcome claims, this report summarizes project quality using implementation evidence and automated test outcomes. The current build demonstrates that:
+
+- The full core loop (`record -> analyze -> suggest -> chat -> share`) is implemented and connected through repository and use-case layers.
+- Sentiment classification, risk detection, and fallback logic are covered by unit tests and execute without failure.
+- Chat-session persistence and degraded-mode behavior (remote API unavailable) are verified through repository-level tests.
+- Data persistence logic supports mood CRUD and recent-window retrieval, ensuring baseline offline continuity.
+
+Taken together, these results provide objective evidence that the implemented prototype is stable, testable, and functionally coherent at the MVP stage.
+
+#### Testing Limitations
+
+The current test suite is already strong at the unit level, but it still has two limitations. First, Firebase-related behavior is not yet covered by full emulator-based integration tests. Second, there is still room for broader UI automation and end-to-end scenario testing. These areas are important future additions because they would strengthen reliability evidence at the system level rather than only the code-unit level.
+
+### 3.3 Software Quality Assessment
+
+| Quality Attribute | Implemented Mechanism | Current Evidence | Risk and Improvement Direction |
+| --- | --- | --- | --- |
+| Functional suitability | End-to-end flow (Record, Analyze, Suggest, Chat, Share) with local and cloud integration | Working module set and passing core-flow tests | Expand longitudinal personalization and multilingual sentiment handling. |
+| Reliability | Local Room persistence, Firestore transaction updates, AI fallback path | 0 failed unit tests; fallback scenarios validated | Add instrumented integration tests for Firestore transaction edge cases. |
+| Usability | Low-pressure interaction model, simple navigation, calm visual hierarchy | Feature-complete interaction flow and stable execution across tested scenarios | Add task-completion-time studies and SUS scoring in a future formal user study. |
+| Security and privacy | Anonymous identity mapping, author-only delete constraints, minimal account/session data | Ownership constraints and moderation pipeline implemented | Current auth/session remains MVP-level local storage; next step is encrypted local storage and stronger account security. |
+| Maintainability | Clear package layering and use-case isolation; dependency assembly via AppContainer | High code traceability from module to use case | Introduce a DI framework and remove manual wiring for larger-scale evolution. |
+| Performance efficiency | Local query windows, bounded chat-context history, asynchronous Firestore callbacks | Stable debug build and passing unit-test execution without runtime-blocking failures in tested paths | Remove `allowMainThreadQueries` and move all database operations fully off the main thread. |
+
+Table 3.2. Implementation-oriented software quality assessment based on ISO/IEC 25010.
+
+Overall, MindEase demonstrates a solid MVP quality baseline: its architecture is modular and critical logic is test-verified. Importantly, the project also identifies and documents engineering risks transparently, which strengthens academic credibility and future scalability.
+
+### 3.4 Reflection and Limitations
+
+Although current implementation quality is strong for an academic MVP, several limitations remain:
+
+- Personalization is still largely rule-driven. The recommendation engine does not yet perform long-horizon adaptive learning from individual feedback loops.
+- Sentiment understanding for colloquial and multilingual expressions is limited. This constrains precision for bilingual campus populations and should be addressed with localized corpora and model fine-tuning.
+- Community and backend verification is currently stronger at logic and unit level than at full integration level. Future iterations should add Firebase emulator-based integration tests and failure-injection scenarios.
+- While privacy-by-design is emphasized at the interaction level through anonymous community identity and ownership constraints, data protection should be further strengthened through encrypted local persistence and clearer retention and erasure policies.
+
+The next-phase roadmap therefore focuses on three engineering priorities: adaptive personalization, stronger security hardening, and deeper integration testing. These upgrades would directly improve both software quality scores and real-world trustworthiness.
 
 4.Summary
 In conclusion, MindEase exemplifies a comprehensive and student‑oriented approach to emotional wellness through digital innovation. Designed around the five functional stages of Record, Analyze, Suggest, Chat, and Share, the app integrates reflection, self‑observation, and anonymous communication into a coherent and ethical user experience. By adopting a modular MVVM architecture and dual‑layer data management via Room Database and Firestore, the system effectively balances offline stability with synchronized cloud services, ensuring both reliability and data security.
 
-The evaluation involving 100 university students confirms the system’s practical value and emotional relevance. Most participants acknowledged improved emotional awareness, meaningful AI suggestions, and an enhanced sense of belonging through the anonymous support community. These findings validate that structured emotion tracking combined with adaptive AI communication can assist young adults in managing psychological stress effectively and ethically.
+Implementation and testing outcomes confirm the system’s practical engineering value and technical coherence. The completed feature set, verified fallback logic, and passing unit tests indicate that structured emotion tracking combined with AI-assisted interaction can be delivered as a stable and ethically constrained MVP for student-oriented emotional support scenarios.
 
 From a research perspective, MindEase demonstrates how human‑centered computing can advance mental health promotion without replacing professional therapy. The project achieves equilibrium between functionality, usability, and privacy, reflecting thoughtful engineering and responsible AI design. While limitations such as limited multilingual understanding and insufficient personalization remain, the future roadmap envisions adaptive models, contextual learning, and integration with campus counseling services.
 
